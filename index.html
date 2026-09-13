@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173e32">
+  <meta name="description" content="A field guide to wonderfully unlikely frogs. Explore FrogDB's fictional amphibians and manage your own collection.">
+  <title>FrogDB · A little out of the ordinary</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="#/" aria-label="FrogDB home"><svg viewBox="0 0 44 38" aria-hidden="true"><path d="M6 18C0 1 20-3 22 10 26-3 44 1 38 18c9 20-41 24-32 0Z" fill="currentColor"/><circle cx="13" cy="11" r="3" fill="#e8f57a"/><circle cx="31" cy="11" r="3" fill="#e8f57a"/><path d="M14 25q8 5 16-1" fill="none" stroke="#e8f57a" stroke-width="2" stroke-linecap="round"/></svg>frogdb<span class="brand-dot">.</span></a>
+    <nav aria-label="Main navigation"><a href="#/" id="nav-guide">Field guide</a><a href="#/admin" id="nav-admin">Manage frogs <span aria-hidden="true">↗</span></a></nav>
+  </header>
+  <main id="main" tabindex="-1"></main>
+  <footer><a class="footer-brand" href="#/">frogdb.</a><p>A fictional field guide. Very real enthusiasm.</p><span>Made for curious people.</span></footer>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title">Delete this frog?</h2><p id="confirm-copy"></p><div class="actions"><button id="confirm-cancel" class="button secondary">Keep frog</button><button id="confirm-delete" class="button danger">Delete frog</button></div></dialog>
+</body>
+</html>
