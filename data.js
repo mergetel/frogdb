@@ -40,3 +40,43 @@ const extra = [
  ['Inkdrop snow frog','Rana atronivea','Riverbank',4.5,'Curious eccentric','A short paper-like rasp','Midges & small beetles','Rare','Black freckles dot a creamy white back like spilled ink. Every frog has a different pattern, and none seems willing to explain it.']
 ];
 extra.forEach(([name,scientific,habitat,size,temperament,call,diet,rarity,description],i)=>seedFrogs.push({id:name.toLowerCase().replaceAll(' ','-'),name,scientific,habitat,size,temperament,call,diet,rarity,description,portrait:i+4,status:'published'}));
+
+// Fictional regions, in the same order as the seed frogs.
+const seedLocations = [
+  'Velora Mist Highlands',
+  'Amberwash River Valley',
+  'Noctara Rainwood',
+  'Solmere Marshes',
+  'Copperfen Basin',
+  'Duskmere Cloud Peaks',
+  'Glasswater Ravine',
+  'Russetfall Forest',
+  'Pearlrun Delta',
+  'Gildshade Woods',
+  'Rosewater Lowlands',
+  'Emerald Crown Range',
+  'Silverstone Gorge',
+  'Ribbonreed Flats',
+  'Cinderleaf Vale',
+  'Lavendell Hollow',
+  'Azure Canopy Isles',
+  'Honeybend Watershed',
+  'Scarletmere Wetlands',
+  'Olivecrest Woodlands',
+  'Frostveil Brooks',
+  'Claretfen Floodplain',
+  'Jademist Escarpment',
+  'Autumnpool Basin',
+  'Ashwater Canyon',
+  'Clovermoon Grove',
+  'Limespire Highlands',
+  'Starfall Forest',
+  'Coralwind Creeklands',
+  'Cocoabark Vale',
+  'Pistachio Fen',
+  'Violetreach Peaks',
+  'Brasswater Marsh',
+  'Seafoam Cloud Isles',
+  'Inkstone Riverlands',
+];
+seedFrogs.forEach((frog, i) => { frog.location = seedLocations[i]; });
