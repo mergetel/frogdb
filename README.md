@@ -41,6 +41,7 @@ All asset links are relative and navigation uses hash routes, so project subpath
 - `app.js`: public routes, admin forms, filtering, safe rendering and data tools.
 - `data.js`: 35 starter frogs and portrait labels.
 - `store.js`: validation and storage adapter.
+- `frog-detail-0.png` through `frog-detail-8.png`: 2-by-2 portrait sheets for hero and profile images (627 pixels per frog). Only the displayed sheet is requested.
 - `frog-atlas.png`: 7-column, 5-row image atlas. Portrait index is row-major, from 0 to 34.
 - `server.js`: dependency-free local preview server.
 - `store.test.js`: data integrity and persistence tests.
