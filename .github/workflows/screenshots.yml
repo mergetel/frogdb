@@ -1,0 +1,64 @@
+name: Screenery screenshots
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  screenshots:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --package-lock=false @playwright/test@1.63.0
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
+      - name: Capture FrogDB
+        shell: bash
+        run: |
+          node --input-type=module <<'CAPTURE'
+          import { chromium, expect } from '@playwright/test';
+          import {spawn} from 'node:child_process';
+          import {mkdir} from 'node:fs/promises';
+          await mkdir('test-results',{recursive:true});
+          const server=spawn(process.execPath,['server.js'],{env:{...process.env,PORT:'4187'},stdio:['ignore','pipe','pipe']});
+          await new Promise((done,reject)=>{server.stdout.once('data',done);server.once('error',reject);server.once('exit',()=>reject(new Error('Server exited')));});
+          let browser;
+          try{
+            browser=await chromium.launch();
+            const page=await browser.newPage({viewport:{width:1440,height:1000},deviceScaleFactor:1,reducedMotion:'reduce'});
+            const errors=[];page.on('pageerror',e=>errors.push(e.message));
+            async function shot(name,locator){
+              await page.evaluate(async()=>{await document.fonts.ready;const urls=[...document.querySelectorAll('.portrait')].map(e=>getComputedStyle(e).backgroundImage).filter(x=>x.startsWith('url(')).map(x=>x.slice(5,-2));await Promise.all([...new Set(urls)].map(src=>new Promise((ok,no)=>{const i=new Image();i.onload=ok;i.onerror=()=>no(new Error('Portrait failed'));i.src=src;})));});
+              await (locator||page).screenshot({path:'test-results/'+name+'.png',animations:'disabled',...(locator?{}:{fullPage:true})});
+            }
+            const url='http://127.0.0.1:4187/';
+            await page.goto(url);await expect(page.locator('.frog-card')).toHaveCount(35);await expect(page.locator('.card-location')).toHaveCount(35);
+            await shot('catalog-desktop',page.locator('#collection'));
+            await page.getByRole('searchbox',{name:'Search frogs',exact:true}).fill('Amberwash');await expect(page.locator('.frog-card')).toHaveCount(1);await expect(page.locator('.card-location')).toContainText('Amberwash River Valley');
+            await shot('location-search',page.locator('#collection'));
+            await page.goto(url+'#/frog/apricot-frill');await expect(page.getByRole('heading',{name:'Apricot frill frog',exact:true})).toBeVisible();await shot('frog-detail');
+            await page.goto(url+'#/admin/edit/apricot-frill');await expect(page.getByRole('textbox',{name:'Location (optional)',exact:true})).toHaveValue('Amberwash River Valley');await shot('admin-editor');
+            await page.setViewportSize({width:390,height:844});await page.goto(url);await page.getByRole('searchbox',{name:'Search frogs',exact:true}).fill('');await expect(page.locator('.frog-card')).toHaveCount(35);await shot('catalog-mobile',page.locator('#collection'));
+            if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw new Error('Mobile horizontal overflow');
+            if(errors.length)throw new Error(errors.join('; '));
+            console.log('Captured five FrogDB screenshots; assertions passed.');
+          }finally{await browser?.close();server.kill();}
+          CAPTURE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frogdb-screenshots
+          path: test-results
+      - uses: screenery/push@v1
+        with:
+          project: mergetel/frogdb
+          path: test-results
