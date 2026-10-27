@@ -40,3 +40,6 @@ const extra = [
  ['Inkdrop snow frog','Rana atronivea','Riverbank',4.5,'Curious eccentric','A short paper-like rasp','Midges & small beetles','Rare','Black freckles dot a creamy white back like spilled ink. Every frog has a different pattern, and none seems willing to explain it.']
 ];
 extra.forEach(([name,scientific,habitat,size,temperament,call,diet,rarity,description],i)=>seedFrogs.push({id:name.toLowerCase().replaceAll(' ','-'),name,scientific,habitat,size,temperament,call,diet,rarity,description,portrait:i+4,status:'published'}));
+const croaks = [6,4,3,7,3,5,2,3,5,4,3,2,8,3,6,5,9,3,7,2,6,4,8,9,5,4,7,2,2,6,10,2,3,3,9]; // 1 to 10, fictional
+seedFrogs.forEach((f,i)=>f.croak=croaks[i]);
+export const croakLabel = n => n<=2?'Library whisper':n<=4?'Garden chat':n<=6?'Porch conversation':n<=8?'Dinner-party voice':'Room-filling';
