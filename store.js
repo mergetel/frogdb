@@ -16,6 +16,8 @@ export function validateRecords(value) {
     if (!habitats.includes(r.habitat) || !['published','draft'].includes(r.status) || !['Common','Uncommon','Rare'].includes(r.rarity)) throw new Error('A frog has an invalid habitat, status or rarity.');
     r.croak = record.croak === undefined ? 5 : Number(record.croak);
     if (!Number.isInteger(r.croak) || r.croak < 1 || r.croak > 10) throw new Error('Croak volume must be a whole number from 1 to 10.');
+    r.move = typeof record.move === 'string' ? record.move.trim() : '';
+    if (r.move.length > 100) throw new Error('Signature move must be 100 characters or fewer.');
     r.size = Number(record.size); r.portrait = Number(record.portrait);
     if (!Number.isFinite(r.size) || r.size < 0.1 || r.size > 40) throw new Error('Size must be between 0.1 and 40 cm.');
     if (!Number.isInteger(r.portrait) || r.portrait < 0 || r.portrait >= portraits.length) throw new Error('Choose one of the frog portraits.');
