@@ -33,3 +33,10 @@ export function saveRecords(storage, records) {
   storage.setItem(STORAGE_KEY, JSON.stringify(valid));
   return valid;
 }
+// Same frog all day for everyone: the local date picks the pond resident.
+export function frogOfTheDay(records, date = new Date()) {
+  const pond = records.filter(r => r.status === 'published');
+  if (!pond.length) return null;
+  const day = Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 864e5);
+  return pond[day % pond.length];
+}
