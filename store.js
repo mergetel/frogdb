@@ -40,3 +40,20 @@ export function frogOfTheDay(records, date = new Date()) {
   const day = Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 864e5);
   return pond[day % pond.length];
 }
+// Plain-English description of the active catalog filters, e.g. "2 rare frogs in the wetland matching “moss”".
+export function resultSummary(count, {query = '', habitat = 'All habitats', rarity = 'Any rarity'} = {}) {
+  const noun = count === 1 ? 'frog' : 'frogs';
+  const kind = rarity === 'Any rarity' ? '' : `${rarity.toLowerCase()} `;
+  const place = habitat === 'All habitats' ? '' : ` in the ${habitat.toLowerCase()}`;
+  const term = query.trim() ? ` matching “${query.trim()}”` : '';
+  return `${count} ${kind}${noun}${place}${term}`;
+}
+// Names the filters in play and suggests which to drop, so an empty result says what to change.
+export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any rarity'} = {}) {
+  const active = [];
+  if (query.trim()) active.push(`the search for “${query.trim()}”`);
+  if (habitat !== 'All habitats') active.push(`the ${habitat.toLowerCase()} habitat`);
+  if (rarity !== 'Any rarity') active.push(`the rarity filter (${rarity.toLowerCase()})`);
+  if (!active.length) return 'The pond is empty right now. Check back soon.';
+  return `Nothing matches ${active.join(' + ')}. Try dropping one, or clear them all.`;
+}
