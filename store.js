@@ -57,3 +57,17 @@ export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any r
   if (!active.length) return 'The pond is empty right now. Check back soon.';
   return `Nothing matches ${active.join(' + ')}. Try dropping one, or clear them all.`;
 }
+// Side-by-side rows for two frogs; size and croak rows say which frog wins, ties say so.
+export function compareFrogs(a, b) {
+  const edge = (x, y, word) => x === y ? 'A dead heat' : `${x > y ? a.name : b.name} is ${word}`;
+  return [
+    {label: 'Habitat', a: a.habitat, b: b.habitat, note: a.habitat === b.habitat ? 'Same neighborhood' : ''},
+    {label: 'Rarity', a: a.rarity, b: b.rarity, note: a.rarity === b.rarity ? 'Equally easy to spot' : ''},
+    {label: 'Size', a: `${a.size} cm`, b: `${b.size} cm`, note: edge(a.size, b.size, 'bigger')},
+    {label: 'Croak volume', a: `${a.croak} of 10`, b: `${b.croak} of 10`, note: edge(a.croak, b.croak, 'louder')},
+    {label: 'Personality', a: a.temperament, b: b.temperament, note: ''},
+    {label: 'Favorite food', a: a.diet, b: b.diet, note: ''},
+    {label: 'Call', a: a.call, b: b.call, note: ''},
+    {label: 'Signature move', a: a.move || '—', b: b.move || '—', note: ''}
+  ];
+}
