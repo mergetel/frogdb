@@ -16,3 +16,5 @@
 .compare-head{border-top:0;align-items:end}.compare-head a{display:flex;flex-direction:column;gap:10px;font-family:Fraunces,serif;font-size:1.15rem}.compare-head .portrait{aspect-ratio:1;border-radius:14px}
 .compare-note{grid-column:2/4;font-size:.82rem;font-style:normal;background:var(--lime);justify-self:start;padding:3px 10px;border-radius:100px}
 @media(max-width:700px){.compare h1{font-size:2.2rem}.compare-row{grid-template-columns:90px 1fr 1fr;gap:6px 12px}.compare-note{grid-column:1/4}}
+
+.card-photo{position:relative}.met-stamp{position:absolute;left:12px;bottom:12px;background:var(--lime);font-size:.73rem;font-weight:600;padding:6px 10px;border-radius:100px}@media(max-width:640px){.met-stamp{font-size:.64rem;left:8px;bottom:8px}}

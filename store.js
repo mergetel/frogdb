@@ -1,5 +1,6 @@
 import {seedFrogs, habitats, portraits} from './data.js';
 export const STORAGE_KEY = 'frogdb.records.v1';
+export const MET_KEY = 'frogdb.met.v1';
 export const freshRecords = () => structuredClone(seedFrogs);
 export function validateRecords(value) {
   if (!Array.isArray(value) || value.length > 500) throw new Error('Choose a FrogDB JSON file containing no more than 500 records.');
@@ -41,19 +42,22 @@ export function frogOfTheDay(records, date = new Date()) {
   return pond[day % pond.length];
 }
 // Plain-English description of the active catalog filters, e.g. "2 rare frogs in the wetland matching “moss”".
-export function resultSummary(count, {query = '', habitat = 'All habitats', rarity = 'Any rarity'} = {}) {
+export function resultSummary(count, {query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all'} = {}) {
   const noun = count === 1 ? 'frog' : 'frogs';
   const kind = rarity === 'Any rarity' ? '' : `${rarity.toLowerCase()} `;
   const place = habitat === 'All habitats' ? '' : ` in the ${habitat.toLowerCase()}`;
   const term = query.trim() ? ` matching “${query.trim()}”` : '';
-  return `${count} ${kind}${noun}${place}${term}`;
+  const seen = met === 'new' ? ' you haven’t met yet' : met === 'met' ? ' you’ve already met' : '';
+  return `${count} ${kind}${noun}${place}${term}${seen}`;
 }
 // Names the filters in play and suggests which to drop, so an empty result says what to change.
-export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any rarity'} = {}) {
+export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all'} = {}) {
   const active = [];
+  if (met === 'new' && !query.trim() && habitat === 'All habitats' && rarity === 'Any rarity') return 'You’ve met every frog in the pond. Pick “Any frog” to visit your favorites again.';
   if (query.trim()) active.push(`the search for “${query.trim()}”`);
   if (habitat !== 'All habitats') active.push(`the ${habitat.toLowerCase()} habitat`);
   if (rarity !== 'Any rarity') active.push(`the rarity filter (${rarity.toLowerCase()})`);
+  if (met !== 'all') active.push(met === 'new' ? 'the “not yet met” filter' : 'the “already met” filter');
   if (!active.length) return 'The pond is empty right now. Check back soon.';
   return `Nothing matches ${active.join(' + ')}. Try dropping one, or clear them all.`;
 }
@@ -70,4 +74,17 @@ export function compareFrogs(a, b) {
     {label: 'Call', a: a.call, b: b.call, note: ''},
     {label: 'Signature move', a: a.move || '—', b: b.move || '—', note: ''}
   ];
+}
+// Frogs this browser has visited, kept apart from the collection so a bad value can never corrupt frog records.
+export function loadMet(storage) {
+  try {
+    const ids = JSON.parse(storage.getItem(MET_KEY) ?? '[]');
+    return new Set(Array.isArray(ids) ? ids.filter(id => typeof id === 'string') : []);
+  } catch { return new Set(); }
+}
+export function markMet(storage, met, id) {
+  if (met.has(id)) return met;
+  const next = new Set(met).add(id);
+  try { storage.setItem(MET_KEY, JSON.stringify([...next])); } catch { /* storage is optional here; the session still remembers */ }
+  return next;
 }
