@@ -1,4 +1,4 @@
-import {seedFrogs, habitats, portraits} from './data.js';
+import {seedFrogs, habitats, portraits, activeHours} from './data.js';
 export const STORAGE_KEY = 'frogdb.records.v1';
 export const MET_KEY = 'frogdb.met.v1';
 export const freshRecords = () => structuredClone(seedFrogs);
@@ -19,6 +19,8 @@ export function validateRecords(value) {
     if (!Number.isInteger(r.croak) || r.croak < 1 || r.croak > 10) throw new Error('Croak volume must be a whole number from 1 to 10.');
     r.move = typeof record.move === 'string' ? record.move.trim() : '';
     if (r.move.length > 100) throw new Error('Signature move must be 100 characters or fewer.');
+    r.active = record.active === undefined ? 'Dusk' : record.active;
+    if (!activeHours.includes(r.active)) throw new Error('Active hours must be Dawn, Daytime, Dusk or Night.');
     r.size = Number(record.size); r.portrait = Number(record.portrait);
     if (!Number.isFinite(r.size) || r.size < 0.1 || r.size > 40) throw new Error('Size must be between 0.1 and 40 cm.');
     if (!Number.isInteger(r.portrait) || r.portrait < 0 || r.portrait >= portraits.length) throw new Error('Choose one of the frog portraits.');
@@ -42,21 +44,23 @@ export function frogOfTheDay(records, date = new Date()) {
   return pond[day % pond.length];
 }
 // Plain-English description of the active catalog filters, e.g. "2 rare frogs in the wetland matching “moss”".
-export function resultSummary(count, {query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all'} = {}) {
+export function resultSummary(count, {query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active = 'Any time'} = {}) {
   const noun = count === 1 ? 'frog' : 'frogs';
   const kind = rarity === 'Any rarity' ? '' : `${rarity.toLowerCase()} `;
   const place = habitat === 'All habitats' ? '' : ` in the ${habitat.toLowerCase()}`;
   const term = query.trim() ? ` matching “${query.trim()}”` : '';
   const seen = met === 'new' ? ' you haven’t met yet' : met === 'met' ? ' you’ve already met' : '';
-  return `${count} ${kind}${noun}${place}${term}${seen}`;
+  const when = active === 'Any time' ? '' : ` out at ${active.toLowerCase()}`;
+  return `${count} ${kind}${noun}${place}${when}${term}${seen}`;
 }
 // Names the filters in play and suggests which to drop, so an empty result says what to change.
-export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all'} = {}) {
+export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active: hours = 'Any time'} = {}) {
   const active = [];
   if (met === 'new' && !query.trim() && habitat === 'All habitats' && rarity === 'Any rarity') return 'You’ve met every frog in the pond. Pick “Any frog” to visit your favorites again.';
   if (query.trim()) active.push(`the search for “${query.trim()}”`);
   if (habitat !== 'All habitats') active.push(`the ${habitat.toLowerCase()} habitat`);
   if (rarity !== 'Any rarity') active.push(`the rarity filter (${rarity.toLowerCase()})`);
+  if (hours !== 'Any time') active.push(`the active hours filter (${hours.toLowerCase()})`);
   if (met !== 'all') active.push(met === 'new' ? 'the “not yet met” filter' : 'the “already met” filter');
   if (!active.length) return 'The pond is empty right now. Check back soon.';
   return `Nothing matches ${active.join(' + ')}. Try dropping one, or clear them all.`;
@@ -69,6 +73,7 @@ export function compareFrogs(a, b) {
     {label: 'Rarity', a: a.rarity, b: b.rarity, note: a.rarity === b.rarity ? 'Equally easy to spot' : ''},
     {label: 'Size', a: `${a.size} cm`, b: `${b.size} cm`, note: edge(a.size, b.size, 'bigger')},
     {label: 'Croak volume', a: `${a.croak} of 10`, b: `${b.croak} of 10`, note: edge(a.croak, b.croak, 'louder')},
+    {label: 'Active hours', a: a.active, b: b.active, note: a.active === b.active ? 'Keep the same hours' : ''},
     {label: 'Personality', a: a.temperament, b: b.temperament, note: ''},
     {label: 'Favorite food', a: a.diet, b: b.diet, note: ''},
     {label: 'Call', a: a.call, b: b.call, note: ''},

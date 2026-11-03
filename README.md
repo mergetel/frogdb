@@ -14,7 +14,7 @@ Open http://127.0.0.1:4173. The server listens only on your computer.
 
 ## Pages
 
-- `#/` — public field guide, search, habitat filters, size (smallest or biggest first), name (A to Z or Z to A) and croak sorting, and a “Not yet met” filter that remembers which frogs you've visited.
+- `#/` — public field guide, search, habitat filters, size (smallest or biggest first), name (A to Z or Z to A) croak sorting, an “Active hours” filter (dawn, daytime, dusk or night), and a “Not yet met” filter that remembers which frogs you've visited.
 - `#/frog/fern-brow` — individual frog profile and attributes.
 - `#/admin` — collection management, status filters, deletion with confirmation, JSON export/import.
 - `#/admin/new` — add a frog, choose a portrait, save as draft or published.
