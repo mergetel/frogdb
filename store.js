@@ -1,6 +1,7 @@
 import {seedFrogs, habitats, portraits, activeHours} from './data.js';
 export const STORAGE_KEY = 'frogdb.records.v1';
 export const MET_KEY = 'frogdb.met.v1';
+export const VIEW_KEY = 'frogdb.view.v1';
 export const freshRecords = () => structuredClone(seedFrogs);
 export function validateRecords(value) {
   if (!Array.isArray(value) || value.length > 500) throw new Error('Choose a FrogDB JSON file containing no more than 500 records.');
@@ -105,4 +106,13 @@ export function sortFrogs(list, key = 'name') {
   };
   const rule = rules[key];
   return [...list].sort((a, b) => (rule ? rule(a, b) : 0) || byName(a, b));
+}
+// Remembers whether the field guide is a photo grid or a compact list; anything unexpected means the grid.
+export function loadView(storage) {
+  try { return storage.getItem(VIEW_KEY) === 'list' ? 'list' : 'grid'; } catch { return 'grid'; }
+}
+export function saveView(storage, view) {
+  const next = view === 'list' ? 'list' : 'grid';
+  try { storage.setItem(VIEW_KEY, next); } catch { /* storage is optional here; the session still remembers */ }
+  return next;
 }
