@@ -116,3 +116,12 @@ export function saveView(storage, view) {
   try { storage.setItem(VIEW_KEY, next); } catch { /* storage is optional here; the session still remembers */ }
   return next;
 }
+// Friendly admin toasts that name the frog and say where it now lives (field guide or drafts).
+export function savedMessage(frog, isNew) {
+  const name = frog.name.trim() || 'Your frog';
+  const where = frog.status === 'published' ? 'It’s live in the field guide.' : 'It’s a draft, so only you can see it for now.';
+  return `${name} ${isNew ? 'has joined the pond.' : 'is freshly updated.'} ${where}`;
+}
+export function deletedMessage(frog) {
+  return `${frog.name.trim() || 'The frog'} hopped out of your collection.`;
+}
