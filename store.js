@@ -45,9 +45,12 @@ export function frogOfTheDay(records, date = new Date()) {
   return pond[day % pond.length];
 }
 // Plain-English description of the active catalog filters, e.g. "2 rare frogs in the wetland matching “moss”".
-export function resultSummary(count, {query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active = 'Any time'} = {}) {
+// Size classes for the field guide filter; boundaries are in the same (invented) units as a frog's size.
+export const sizeClasses = ['Pocket-sized', 'Palm-sized', 'Hand-filling'];
+export function sizeClass(size) { return size < 3.5 ? sizeClasses[0] : size < 5.5 ? sizeClasses[1] : sizeClasses[2]; }
+export function resultSummary(count, {query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active = 'Any time', size = 'Any size'} = {}) {
   const noun = count === 1 ? 'frog' : 'frogs';
-  const kind = rarity === 'Any rarity' ? '' : `${rarity.toLowerCase()} `;
+  const kind = `${size === 'Any size' ? '' : `${size.toLowerCase()} `}${rarity === 'Any rarity' ? '' : `${rarity.toLowerCase()} `}`;
   const place = habitat === 'All habitats' ? '' : ` in the ${habitat.toLowerCase()}`;
   const term = query.trim() ? ` matching “${query.trim()}”` : '';
   const seen = met === 'new' ? ' you haven’t met yet' : met === 'met' ? ' you’ve already met' : '';
@@ -55,12 +58,13 @@ export function resultSummary(count, {query = '', habitat = 'All habitats', rari
   return `${count} ${kind}${noun}${place}${when}${term}${seen}`;
 }
 // Names the filters in play and suggests which to drop, so an empty result says what to change.
-export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active: hours = 'Any time'} = {}) {
+export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active: hours = 'Any time', size = 'Any size'} = {}) {
   const active = [];
   if (met === 'new' && !query.trim() && habitat === 'All habitats' && rarity === 'Any rarity') return 'You’ve met every frog in the pond. Pick “Any frog” to visit your favorites again.';
   if (query.trim()) active.push(`the search for “${query.trim()}”`);
   if (habitat !== 'All habitats') active.push(`the ${habitat.toLowerCase()} habitat`);
   if (rarity !== 'Any rarity') active.push(`the rarity filter (${rarity.toLowerCase()})`);
+  if (size !== 'Any size') active.push(`the size filter (${size.toLowerCase()})`);
   if (hours !== 'Any time') active.push(`the active hours filter (${hours.toLowerCase()})`);
   if (met !== 'all') active.push(met === 'new' ? 'the “not yet met” filter' : 'the “already met” filter');
   if (!active.length) return 'The pond is empty right now. Check back soon.';
