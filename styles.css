@@ -34,3 +34,6 @@
 .list .card-bottom{border-top:0;margin-top:6px;padding-top:0}
 .list .list-facts{display:inline}
 @media(max-width:700px){.heading-tools{align-items:flex-start}.view-toggle button{padding:7px 11px;font-size:.72rem}}
+
+.print-card{margin:0 0 18px}
+@media print{@page{margin:14mm}body{background:#fff}.skip,.site-header,footer,#toast,.back,.print-card,.compare-picker,.frog-pager,.text-link{display:none!important}main{padding:0;max-width:none}.detail{display:block;max-width:120mm;margin:0 auto;border:2px solid #173e32;border-radius:18px;padding:10mm;break-inside:avoid}.detail .portrait{width:100%;max-width:none}.detail .attributes{margin-top:6mm}.detail .fine-print{margin-top:6mm}}
