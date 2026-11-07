@@ -20,6 +20,8 @@ Open http://127.0.0.1:4173. The server listens only on your computer.
 - `#/admin/new` — add a frog, choose a portrait, save as draft or published.
 - `#/admin/edit/fern-brow` — edit an existing frog.
 
+Each frog page has a **Print trading card** button; printing hides the site chrome and leaves a single-page card.
+
 Only published records appear in the public catalog. New frogs default to draft. All starter frogs are published.
 
 ## Demo storage
