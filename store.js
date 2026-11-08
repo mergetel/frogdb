@@ -129,3 +129,11 @@ export function savedMessage(frog, isNew) {
 export function deletedMessage(frog) {
   return `${frog.name.trim() || 'The frog'} hopped out of your collection.`;
 }
+// Pond neighbors for a profile: other published frogs from the same habitat, nearest in rarity, hours and size first.
+export function pondNeighbors(records, frog, limit = 3) {
+  const closeness = f => (f.rarity === frog.rarity ? 0 : 10) + (f.active === frog.active ? 0 : 5) + Math.abs(f.size - frog.size);
+  return records
+    .filter(f => f.status === 'published' && f.id !== frog.id && f.habitat === frog.habitat)
+    .sort((a, b) => closeness(a) - closeness(b) || a.name.localeCompare(b.name))
+    .slice(0, limit);
+}
