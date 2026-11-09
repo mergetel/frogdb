@@ -50,3 +50,7 @@ seedFrogs.forEach((f,i)=>f.move=moves[i]);
 
 const hours = ["Dawn", "Daytime", "Night", "Daytime", "Dusk", "Dusk", "Night", "Night", "Daytime", "Night", "Dawn", "Daytime", "Dusk", "Dawn", "Night", "Daytime", "Dawn", "Dusk", "Dusk", "Daytime", "Dawn", "Night", "Daytime", "Daytime", "Night", "Dawn", "Dawn", "Night", "Dusk", "Night", "Daytime", "Dusk", "Dusk", "Dawn", "Night"]; // when each frog is out and about, fictional
 seedFrogs.forEach((f,i)=>f.active=hours[i]);
+
+export const weathers = ['Drizzle', 'Mist', 'Sunshine', 'Thunderstorm', 'Breeze'];
+const weather = ['Breeze', 'Drizzle', 'Breeze', 'Drizzle', 'Thunderstorm', 'Drizzle', 'Breeze', 'Sunshine', 'Sunshine', 'Sunshine', 'Mist', 'Thunderstorm', 'Drizzle', 'Sunshine', 'Thunderstorm', 'Thunderstorm', 'Sunshine', 'Breeze', 'Breeze', 'Thunderstorm', 'Drizzle', 'Breeze', 'Mist', 'Mist', 'Mist', 'Thunderstorm', 'Mist', 'Mist', 'Sunshine', 'Mist', 'Sunshine', 'Thunderstorm', 'Drizzle', 'Breeze', 'Drizzle']; // fictional favorite weather
+seedFrogs.forEach((f,i)=>f.weather=weather[i]);

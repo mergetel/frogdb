@@ -48,3 +48,4 @@
 .neighbors strong{display:block;font-weight:600}
 .neighbors i{display:block;font-size:.78rem;color:var(--muted);margin-top:3px}
 @media print{.neighbors{display:none!important}}
+.filters{flex-wrap:wrap}.filters .search{flex-basis:100%}.filters>label:not(.search){flex:1 1 200px}
