@@ -104,6 +104,7 @@ export function markMet(storage, met, id) {
   return next;
 }
 // Orders frogs for the field guide; ties always fall back to A to Z so the order never shuffles.
+const rarityRank = f => ['Common', 'Uncommon', 'Rare'].indexOf(f.rarity);
 export function sortFrogs(list, key = 'name') {
   const byName = (a, b) => a.name.localeCompare(b.name);
   const rules = {
@@ -111,7 +112,9 @@ export function sortFrogs(list, key = 'name') {
     big: (a, b) => b.size - a.size,
     loud: (a, b) => b.croak - a.croak,
     quiet: (a, b) => a.croak - b.croak,
-    zname: (a, b) => byName(b, a)
+    zname: (a, b) => byName(b, a),
+    rare: (a, b) => rarityRank(b) - rarityRank(a),
+    common: (a, b) => rarityRank(a) - rarityRank(b)
   };
   const rule = rules[key];
   return [...list].sort((a, b) => (rule ? rule(a, b) : 0) || byName(a, b));
