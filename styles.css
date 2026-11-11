@@ -49,3 +49,5 @@
 .neighbors i{display:block;font-size:.78rem;color:var(--muted);margin-top:3px}
 @media print{.neighbors{display:none!important}}
 .filters{flex-wrap:wrap}.filters .search{flex-basis:100%}.filters>label:not(.search){flex:1 1 200px}
+.spotting-tip{margin:0 0 24px;padding:14px 18px;border-radius:var(--radius);background:var(--lime);font-size:.94rem;line-height:1.5}.spotting-tip strong{display:block;font-size:.76rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px}
+@media print{.spotting-tip{border:1px solid #173e32;background:none}}
