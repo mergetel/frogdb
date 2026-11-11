@@ -145,3 +145,13 @@ export function pondNeighbors(records, frog, limit = 3) {
     .sort((a, b) => closeness(a) - closeness(b) || a.name.localeCompare(b.name))
     .slice(0, limit);
 }
+// "How to spot one" tip for a profile: where, when and in what weather to look, what to listen for, and how lucky you'd need to be.
+const tipHours = {Dawn: 'at dawn', Daytime: 'in broad daylight', Dusk: 'at dusk', Night: 'after dark'};
+const tipSkies = {Drizzle: 'during a light drizzle', Mist: 'when the mist rolls in', Sunshine: 'on a sunny day', Thunderstorm: 'while a thunderstorm rumbles', Breeze: 'when there’s a breeze'};
+const tipOdds = {Common: 'Common, so you’ll likely find one before your tea goes cold.', Uncommon: 'Uncommon, so pack a snack and some patience.', Rare: 'Rare, so count yourself lucky and try not to squeal.'};
+export function spottingTip(frog) {
+  const call = frog.call.trim().replace(/[.!?]+$/, '');
+  const listen = call ? ` Listen for ${call[0].toLowerCase()}${call.slice(1)}.` : '';
+  const sky = frog.active === 'Night' && frog.weather === 'Sunshine' ? 'once a sunny day has cooled off' : tipSkies[frog.weather]; // no sunshine after dark
+  return `Try the ${frog.habitat.toLowerCase()} ${tipHours[frog.active]}, ${sky}.${listen} ${tipOdds[frog.rarity]}`;
+}
