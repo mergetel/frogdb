@@ -2,6 +2,7 @@ import {seedFrogs, habitats, portraits, activeHours, weathers} from './data.js';
 export const STORAGE_KEY = 'frogdb.records.v1';
 export const MET_KEY = 'frogdb.met.v1';
 export const VIEW_KEY = 'frogdb.view.v1';
+export const RECENT_KEY = 'frogdb.recent.v1';
 export const freshRecords = () => structuredClone(seedFrogs);
 export function validateRecords(value) {
   if (!Array.isArray(value) || value.length > 500) throw new Error('Choose a FrogDB JSON file containing no more than 500 records.');
@@ -154,4 +155,20 @@ export function spottingTip(frog) {
   const listen = call ? ` Listen for ${call[0].toLowerCase()}${call.slice(1)}.` : '';
   const sky = frog.active === 'Night' && frog.weather === 'Sunshine' ? 'once a sunny day has cooled off' : tipSkies[frog.weather]; // no sunshine after dark
   return `Try the ${frog.habitat.toLowerCase()} ${tipHours[frog.active]}, ${sky}.${listen} ${tipOdds[frog.rarity]}`;
+}
+// Recently visited frogs, newest first. A revisit hops back to the front; the shelf keeps the last few only.
+export function loadRecent(storage) {
+  try {
+    const ids = JSON.parse(storage.getItem(RECENT_KEY) ?? '[]');
+    return Array.isArray(ids) ? [...new Set(ids.filter(id => typeof id === 'string'))].slice(0, 6) : [];
+  } catch { return []; }
+}
+export function pushRecent(storage, recent, id, limit = 6) {
+  const next = [id, ...recent.filter(x => x !== id)].slice(0, limit);
+  try { storage.setItem(RECENT_KEY, JSON.stringify(next)); } catch { /* storage is optional here; the session still remembers */ }
+  return next;
+}
+// The frogs to show on the shelf: published ones only, in visit order, skipping any that were deleted or unpublished.
+export function recentFrogs(records, recent, skip = '') {
+  return recent.filter(id => id !== skip).map(id => records.find(r => r.id === id && r.status === 'published')).filter(Boolean);
 }
