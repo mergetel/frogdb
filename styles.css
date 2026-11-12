@@ -51,3 +51,19 @@
 .filters{flex-wrap:wrap}.filters .search{flex-basis:100%}.filters>label:not(.search){flex:1 1 200px}
 .spotting-tip{margin:0 0 24px;padding:14px 18px;border-radius:var(--radius);background:var(--lime);font-size:.94rem;line-height:1.5}.spotting-tip strong{display:block;font-size:.76rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px}
 @media print{.spotting-tip{border:1px solid #173e32;background:none}}
+.recent{margin:-20px 0 50px}
+.recent-heading{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.recent h2{font-family:'Fraunces',serif;font-size:1.3rem;margin:0}
+.recent-heading p{margin:0;font-size:.88rem;color:var(--muted)}
+.recent ul{list-style:none;margin:0;padding:0 0 6px;display:flex;gap:12px;overflow-x:auto}
+.recent li{flex:0 0 auto}
+.recent a{display:flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;border:1px solid var(--line);border-radius:100px;background:#fff}
+.recent a:hover strong{text-decoration:underline}
+.recent a:focus-visible{outline:3px solid var(--ink,#173e32);outline-offset:3px}
+.recent .portrait{width:40px;flex:none;aspect-ratio:1;border-radius:50%}
+.recent strong{display:block;font-weight:600;font-size:.9rem;white-space:nowrap}
+.recent i{display:block;font-size:.74rem;color:var(--muted);font-style:normal}
+.text-button{background:none;border:0;padding:4px 0;margin-top:6px;font:inherit;font-size:.84rem;color:var(--muted);text-decoration:underline;cursor:pointer}
+.text-button:hover{color:var(--ink)}
+.text-button:focus-visible{outline:3px solid var(--ink,#173e32);outline-offset:3px}
+@media print{.recent{display:none!important}}
