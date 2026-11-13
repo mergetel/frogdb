@@ -1,4 +1,4 @@
-import {seedFrogs, habitats, portraits, activeHours, weathers} from './data.js';
+import {seedFrogs, habitats, portraits, activeHours, weathers, colors} from './data.js';
 export const STORAGE_KEY = 'frogdb.records.v1';
 export const MET_KEY = 'frogdb.met.v1';
 export const VIEW_KEY = 'frogdb.view.v1';
@@ -25,6 +25,8 @@ export function validateRecords(value) {
     if (!activeHours.includes(r.active)) throw new Error('Active hours must be Dawn, Daytime, Dusk or Night.');
     r.weather = record.weather === undefined ? 'Mist' : record.weather;
     if (!weathers.includes(r.weather)) throw new Error('Favorite weather must be Drizzle, Mist, Sunshine, Thunderstorm or Breeze.');
+    r.color = record.color === undefined ? 'Green' : record.color;
+    if (!colors.includes(r.color)) throw new Error(`Main color must be one of: ${colors.join(', ')}.`);
     r.size = Number(record.size); r.portrait = Number(record.portrait);
     if (!Number.isFinite(r.size) || r.size < 0.1 || r.size > 40) throw new Error('Size must be between 0.1 and 40 cm.');
     if (!Number.isInteger(r.portrait) || r.portrait < 0 || r.portrait >= portraits.length) throw new Error('Choose one of the frog portraits.');
@@ -51,9 +53,9 @@ export function frogOfTheDay(records, date = new Date()) {
 // Size classes for the field guide filter; boundaries are in the same (invented) units as a frog's size.
 export const sizeClasses = ['Pocket-sized', 'Palm-sized', 'Hand-filling'];
 export function sizeClass(size) { return size < 3.5 ? sizeClasses[0] : size < 5.5 ? sizeClasses[1] : sizeClasses[2]; }
-export function resultSummary(count, {query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active = 'Any time', size = 'Any size', weather = 'Any weather'} = {}) {
+export function resultSummary(count, {query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active = 'Any time', size = 'Any size', weather = 'Any weather', color = 'Any color'} = {}) {
   const noun = count === 1 ? 'frog' : 'frogs';
-  const kind = `${size === 'Any size' ? '' : `${size.toLowerCase()} `}${rarity === 'Any rarity' ? '' : `${rarity.toLowerCase()} `}`;
+  const kind = `${size === 'Any size' ? '' : `${size.toLowerCase()} `}${rarity === 'Any rarity' ? '' : `${rarity.toLowerCase()} `}${color === 'Any color' ? '' : `${color.toLowerCase()} `}`;
   const place = habitat === 'All habitats' ? '' : ` in the ${habitat.toLowerCase()}`;
   const term = query.trim() ? ` matching “${query.trim()}”` : '';
   const seen = met === 'new' ? ' you haven’t met yet' : met === 'met' ? ' you’ve already met' : '';
@@ -62,17 +64,18 @@ export function resultSummary(count, {query = '', habitat = 'All habitats', rari
   return `${count} ${kind}${noun}${place}${when}${sky}${term}${seen}`;
 }
 // Names the filters in play and suggests which to drop, so an empty result says what to change.
-export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active: hours = 'Any time', size = 'Any size', weather = 'Any weather'} = {}) {
+export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active: hours = 'Any time', size = 'Any size', weather = 'Any weather', color = 'Any color'} = {}) {
   const active = [];
-  if (met === 'new' && !query.trim() && habitat === 'All habitats' && rarity === 'Any rarity') return 'You’ve met every frog in the pond. Pick “Any frog” to visit your favorites again.';
   if (query.trim()) active.push(`the search for “${query.trim()}”`);
   if (habitat !== 'All habitats') active.push(`the ${habitat.toLowerCase()} habitat`);
   if (rarity !== 'Any rarity') active.push(`the rarity filter (${rarity.toLowerCase()})`);
   if (size !== 'Any size') active.push(`the size filter (${size.toLowerCase()})`);
+  if (color !== 'Any color') active.push(`the color filter (${color.toLowerCase()})`);
   if (hours !== 'Any time') active.push(`the active hours filter (${hours.toLowerCase()})`);
   if (weather !== 'Any weather') active.push(`the favorite weather filter (${weather.toLowerCase()})`);
   if (met !== 'all') active.push(met === 'new' ? 'the “not yet met” filter' : 'the “already met” filter');
   if (!active.length) return 'The pond is empty right now. Check back soon.';
+  if (met === 'new' && active.length === 1) return 'You’ve met every frog in the pond. Pick “Any frog” to visit your favorites again.';
   return `Nothing matches ${active.join(' + ')}. Try dropping one, or clear them all.`;
 }
 // Side-by-side rows for two frogs; size and croak rows say which frog wins, ties say so.
@@ -83,6 +86,7 @@ export function compareFrogs(a, b) {
     {label: 'Rarity', a: a.rarity, b: b.rarity, note: a.rarity === b.rarity ? 'Equally easy to spot' : ''},
     {label: 'Size', a: `${a.size} cm`, b: `${b.size} cm`, note: edge(a.size, b.size, 'bigger')},
     {label: 'Croak volume', a: `${a.croak} of 10`, b: `${b.croak} of 10`, note: edge(a.croak, b.croak, 'louder')},
+    {label: 'Main color', a: a.color, b: b.color, note: a.color === b.color ? 'Could be cousins' : ''},
     {label: 'Active hours', a: a.active, b: b.active, note: a.active === b.active ? 'Keep the same hours' : ''},
     {label: 'Favorite weather', a: a.weather, b: b.weather, note: a.weather === b.weather ? 'Shared sky' : ''},
     {label: 'Personality', a: a.temperament, b: b.temperament, note: ''},

@@ -54,3 +54,8 @@ seedFrogs.forEach((f,i)=>f.active=hours[i]);
 export const weathers = ['Drizzle', 'Mist', 'Sunshine', 'Thunderstorm', 'Breeze'];
 const weather = ['Breeze', 'Drizzle', 'Breeze', 'Drizzle', 'Thunderstorm', 'Drizzle', 'Breeze', 'Sunshine', 'Sunshine', 'Sunshine', 'Mist', 'Thunderstorm', 'Drizzle', 'Sunshine', 'Thunderstorm', 'Thunderstorm', 'Sunshine', 'Breeze', 'Breeze', 'Thunderstorm', 'Drizzle', 'Breeze', 'Mist', 'Mist', 'Mist', 'Thunderstorm', 'Mist', 'Mist', 'Sunshine', 'Mist', 'Sunshine', 'Thunderstorm', 'Drizzle', 'Breeze', 'Drizzle']; // fictional favorite weather
 seedFrogs.forEach((f,i)=>f.weather=weather[i]);
+
+export const colors = ['Green', 'Blue', 'Yellow & gold', 'Orange & red', 'Pink', 'Purple', 'Brown & black', 'Grey & white'];
+export const colorSwatches = {'Green': '#5fa04e', 'Blue': '#3f7fc0', 'Yellow & gold': '#e3b52f', 'Orange & red': 'linear-gradient(135deg,#e8792b 50%,#c8323a 50%)', 'Pink': '#ec8f9c', 'Purple': '#8d6bb8', 'Brown & black': 'linear-gradient(135deg,#7a4b2a 50%,#1f1f24 50%)', 'Grey & white': 'linear-gradient(135deg,#a4a9ae 50%,#f4f1e6 50%)'};
+const color = ['Green', 'Pink', 'Blue', 'Yellow & gold', 'Brown & black', 'Purple', 'Green', 'Orange & red', 'Grey & white', 'Brown & black', 'Pink', 'Green', 'Grey & white', 'Green', 'Orange & red', 'Purple', 'Blue', 'Yellow & gold', 'Orange & red', 'Green', 'Blue', 'Orange & red', 'Green', 'Orange & red', 'Grey & white', 'Grey & white', 'Green', 'Blue', 'Pink', 'Brown & black', 'Green', 'Purple', 'Yellow & gold', 'Green', 'Grey & white']; // main color, matched to each portrait in the atlas
+seedFrogs.forEach((f,i)=>f.color=color[i]);

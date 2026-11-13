@@ -14,7 +14,7 @@ Open http://127.0.0.1:4173. The server listens only on your computer.
 
 ## Pages
 
-- `#/` — public field guide, search, habitat filters, size (smallest or biggest first), name (A to Z or Z to A), croak, and rarity (rarest or most common first) sorting, a size-class filter (pocket-sized, palm-sized or hand-filling), an “Active hours” filter (dawn, daytime, dusk or night), a “Favorite weather” filter (drizzle, mist, sunshine, thunderstorm or breeze), and a “Not yet met” filter that remembers which frogs you've visited A âRecently visitedâ shelf above the guide lists the last six frogs you opened, newest first, with a button to tidy it.
+- `#/` — public field guide, search, habitat filters, size (smallest or biggest first), name (A to Z or Z to A), croak, and rarity (rarest or most common first) sorting, a size-class filter (pocket-sized, palm-sized or hand-filling), an “Active hours” filter (dawn, daytime, dusk or night), a “Favorite weather” filter (drizzle, mist, sunshine, thunderstorm or breeze), a “Main color” filter (green, blue, yellow & gold, orange & red, pink, purple, brown & black or grey & white), and a “Not yet met” filter that remembers which frogs you've visited. A “Recently visited” shelf above the guide lists the last six frogs you opened, newest first, with a button to tidy it.
 - `#/frog/fern-brow` — individual frog profile and attributes, with a “How to spot one” tip written from the frog's habitat, hours, weather, call and rarity.
 - `#/admin` — collection management, status filters, deletion with confirmation, JSON export/import.
 - `#/admin/new` — add a frog, choose a portrait, save as draft or published.
