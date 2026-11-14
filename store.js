@@ -176,3 +176,17 @@ export function pushRecent(storage, recent, id, limit = 6) {
 export function recentFrogs(records, recent, skip = '') {
   return recent.filter(id => id !== skip).map(id => records.find(r => r.id === id && r.status === 'published')).filter(Boolean);
 }
+// One removable chip per active field guide filter, in dropdown order; "key" names the filter a click should reset.
+const chipHours = {Dawn: 'Out at dawn', Daytime: 'Out by day', Dusk: 'Out at dusk', Night: 'Out at night'};
+export function filterChips({query = '', habitat = 'All habitats', rarity = 'Any rarity', size = 'Any size', color = 'Any color', active = 'Any time', weather = 'Any weather', met = 'all'} = {}) {
+  const chips = [];
+  if (query.trim()) chips.push({key: 'query', label: `Search: “${query.trim()}”`});
+  if (habitat !== 'All habitats') chips.push({key: 'habitat', label: habitat});
+  if (rarity !== 'Any rarity') chips.push({key: 'rarity', label: rarity});
+  if (size !== 'Any size') chips.push({key: 'size', label: size});
+  if (color !== 'Any color') chips.push({key: 'color', label: color});
+  if (active !== 'Any time') chips.push({key: 'active', label: chipHours[active] || active});
+  if (weather !== 'Any weather') chips.push({key: 'weather', label: `Loves ${weather.toLowerCase()}`});
+  if (met !== 'all') chips.push({key: 'met', label: met === 'new' ? 'Not yet met' : 'Already met'});
+  return chips;
+}
