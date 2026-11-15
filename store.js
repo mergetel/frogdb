@@ -190,3 +190,30 @@ export function filterChips({query = '', habitat = 'All habitats', rarity = 'Any
   if (met !== 'all') chips.push({key: 'met', label: met === 'new' ? 'Not yet met' : 'Already met'});
   return chips;
 }
+// "Did you mean…?" for a search or link that found nothing: the published frog whose name (or scientific name)
+// (or profile link) is a near-miss for what was typed. Compares word for word, so "fernbow" finds Fernbrow and "lavendar horn" finds Lavender horn.
+const typoDistance = (a, b) => {
+  let row = Array.from({length: b.length + 1}, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    const next = [i];
+    for (let j = 1; j <= b.length; j++) next[j] = Math.min(row[j] + 1, next[j - 1] + 1, row[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    row = next;
+  }
+  return row[b.length];
+};
+export function suggestFrog(records, text) {
+  const typed = String(text ?? '').toLowerCase().replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+  if (typed.length < 3) return null;
+  const words = typed.split(' ').length, allowed = Math.min(3, Math.max(1, Math.floor(typed.length / 4)));
+  let best = null, bestScore = Infinity;
+  for (const frog of records.filter(r => r.status === 'published')) {
+    for (const label of [frog.name, frog.scientific, frog.id]) {
+      const parts = label.toLowerCase().split(/[\s-]+/);
+      for (let i = 0; i + words <= parts.length; i++) {
+        const score = typoDistance(typed, parts.slice(i, i + words).join(' '));
+        if (score < bestScore || (score === bestScore && best && frog.name.localeCompare(best.name) < 0)) { best = frog; bestScore = score; }
+      }
+    }
+  }
+  return bestScore <= allowed ? best : null;
+}

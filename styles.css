@@ -78,3 +78,4 @@
 .chip:focus-visible{outline:3px solid #8051b3;outline-offset:2px}
 .filter-chips .text-button{margin:0 0 0 6px}
 @media print{.filter-chips{display:none!important}}
+.did-you-mean{font-size:.92rem}.did-you-mean a{font-weight:600;text-decoration:underline;text-underline-offset:3px}.did-you-mean a:hover{color:#567226}.empty .did-you-mean,.not-found .did-you-mean{margin-top:-10px}
