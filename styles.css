@@ -37,6 +37,12 @@
 
 .print-card{margin:0 0 18px}
 @media print{@page{margin:14mm}body{background:#fff}.skip,.site-header,footer,#toast,.back,.print-card,.compare-picker,.frog-pager,.text-link{display:none!important}main{padding:0;max-width:none}.detail{display:block;max-width:120mm;margin:0 auto;border:2px solid #173e32;border-radius:18px;padding:10mm;break-inside:avoid}.detail .portrait{width:100%;max-width:none}.detail .attributes{margin-top:6mm}.detail .fine-print{margin-top:6mm}}
+.pond-records{margin:0 0 6px}
+.pond-records h2{font-size:.76rem;font-family:'DM Sans',sans-serif;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin:0 0 10px}
+.pond-records p{font-size:.84rem;color:var(--muted);margin:-4px 0 10px;line-height:1.5}
+.pond-records ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.pond-records li{font-size:.82rem;font-weight:600;padding:7px 12px;border-radius:100px;border:1px solid var(--line);background:#fffef9;font-variant-numeric:tabular-nums}
+.pond-records li.top{background:var(--lime);border-color:var(--ink)}
 .neighbors{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)}
 .neighbors h2{font-family:'Fraunces',serif;font-size:1.3rem;margin:0 0 4px}
 .neighbors p{margin:0 0 14px;font-size:.88rem;color:var(--muted)}

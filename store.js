@@ -217,3 +217,25 @@ export function suggestFrog(records, text) {
   }
   return bestScore <= allowed ? best : null;
 }
+// "Pond records" badges for a profile: where the frog ranks by size and croak among published frogs
+// (counting from whichever end is closer), plus any habitat superlative it holds. Ties are called "joint".
+const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
+const rankBadge = (pond, frog, key, [high, low]) => {
+  const above = pond.filter(f => f[key] > frog[key]).length, below = pond.filter(f => f[key] < frog[key]).length;
+  const joint = pond.filter(f => f[key] === frog[key]).length > 1 ? 'Joint ' : '';
+  const [place, word] = above <= below ? [above + 1, high] : [below + 1, low];
+  return {place, word, label: place === 1 ? `${joint}${joint ? word : word[0].toUpperCase() + word.slice(1)} of all ${pond.length}` : `${joint}${ordinal(place)} ${word} of ${pond.length}`};
+};
+export function pondRecords(records, frog) {
+  const pond = records.filter(f => f.status === 'published' || f.id === frog.id);
+  if (pond.length < 2) return [];
+  const badges = [], local = pond.filter(f => f.habitat === frog.habitat), where = `in the ${frog.habitat.toLowerCase()}`;
+  for (const [key, words] of [['size', ['biggest', 'smallest']], ['croak', ['loudest', 'quietest']]]) {
+    const overall = rankBadge(pond, frog, key, words);
+    badges.push({key, label: overall.label, top: overall.place === 1});
+    if (local.length < 2 || local.length === pond.length) continue;
+    const near = rankBadge(local, frog, key, words);
+    if (near.place === 1 && overall.place !== 1) badges.push({key, label: near.label.replace(/ of all \d+$/, ` ${where}`), top: true});
+  }
+  return badges;
+}
