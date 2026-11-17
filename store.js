@@ -27,6 +27,8 @@ export function validateRecords(value) {
     if (!weathers.includes(r.weather)) throw new Error('Favorite weather must be Drizzle, Mist, Sunshine, Thunderstorm or Breeze.');
     r.color = record.color === undefined ? 'Green' : record.color;
     if (!colors.includes(r.color)) throw new Error(`Main color must be one of: ${colors.join(', ')}.`);
+    r.leap = record.leap === undefined ? 30 : Number(record.leap);
+    if (!Number.isInteger(r.leap) || r.leap < 1 || r.leap > 300) throw new Error('Best leap must be a whole number of centimeters from 1 to 300.');
     r.size = Number(record.size); r.portrait = Number(record.portrait);
     if (!Number.isFinite(r.size) || r.size < 0.1 || r.size > 40) throw new Error('Size must be between 0.1 and 40 cm.');
     if (!Number.isInteger(r.portrait) || r.portrait < 0 || r.portrait >= portraits.length) throw new Error('Choose one of the frog portraits.');
@@ -78,7 +80,7 @@ export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any r
   if (met === 'new' && active.length === 1) return 'You’ve met every frog in the pond. Pick “Any frog” to visit your favorites again.';
   return `Nothing matches ${active.join(' + ')}. Try dropping one, or clear them all.`;
 }
-// Side-by-side rows for two frogs; size and croak rows say which frog wins, ties say so.
+// Side-by-side rows for two frogs; size, croak and leap rows say which frog wins, ties say so.
 export function compareFrogs(a, b) {
   const edge = (x, y, word) => x === y ? 'A dead heat' : `${x > y ? a.name : b.name} is ${word}`;
   return [
@@ -86,6 +88,7 @@ export function compareFrogs(a, b) {
     {label: 'Rarity', a: a.rarity, b: b.rarity, note: a.rarity === b.rarity ? 'Equally easy to spot' : ''},
     {label: 'Size', a: `${a.size} cm`, b: `${b.size} cm`, note: edge(a.size, b.size, 'bigger')},
     {label: 'Croak volume', a: `${a.croak} of 10`, b: `${b.croak} of 10`, note: edge(a.croak, b.croak, 'louder')},
+    {label: 'Best leap', a: `${a.leap} cm`, b: `${b.leap} cm`, note: edge(a.leap, b.leap, 'the farther jumper')},
     {label: 'Main color', a: a.color, b: b.color, note: a.color === b.color ? 'Could be cousins' : ''},
     {label: 'Active hours', a: a.active, b: b.active, note: a.active === b.active ? 'Keep the same hours' : ''},
     {label: 'Favorite weather', a: a.weather, b: b.weather, note: a.weather === b.weather ? 'Shared sky' : ''},
@@ -117,6 +120,8 @@ export function sortFrogs(list, key = 'name') {
     big: (a, b) => b.size - a.size,
     loud: (a, b) => b.croak - a.croak,
     quiet: (a, b) => a.croak - b.croak,
+    far: (a, b) => b.leap - a.leap,
+    near: (a, b) => a.leap - b.leap,
     zname: (a, b) => byName(b, a),
     rare: (a, b) => rarityRank(b) - rarityRank(a),
     common: (a, b) => rarityRank(a) - rarityRank(b)
