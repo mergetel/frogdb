@@ -59,3 +59,7 @@ export const colors = ['Green', 'Blue', 'Yellow & gold', 'Orange & red', 'Pink',
 export const colorSwatches = {'Green': '#5fa04e', 'Blue': '#3f7fc0', 'Yellow & gold': '#e3b52f', 'Orange & red': 'linear-gradient(135deg,#e8792b 50%,#c8323a 50%)', 'Pink': '#ec8f9c', 'Purple': '#8d6bb8', 'Brown & black': 'linear-gradient(135deg,#7a4b2a 50%,#1f1f24 50%)', 'Grey & white': 'linear-gradient(135deg,#a4a9ae 50%,#f4f1e6 50%)'};
 const color = ['Green', 'Pink', 'Blue', 'Yellow & gold', 'Brown & black', 'Purple', 'Green', 'Orange & red', 'Grey & white', 'Brown & black', 'Pink', 'Green', 'Grey & white', 'Green', 'Orange & red', 'Purple', 'Blue', 'Yellow & gold', 'Orange & red', 'Green', 'Blue', 'Orange & red', 'Green', 'Orange & red', 'Grey & white', 'Grey & white', 'Green', 'Blue', 'Pink', 'Brown & black', 'Green', 'Purple', 'Yellow & gold', 'Green', 'Grey & white']; // main color, matched to each portrait in the atlas
 seedFrogs.forEach((f,i)=>f.color=color[i]);
+
+const leaps = [62, 48, 18, 12, 55, 40, 30, 35, 90, 45, 26, 110, 70, 58, 33, 9, 140, 52, 24, 47, 64, 50, 38, 28, 15, 22, 165, 44, 60, 41, 11, 36, 57, 32, 49]; // best single hop in cm, fictional
+seedFrogs.forEach((f,i)=>f.leap=leaps[i]);
+export const leapLabel = n => n<20?'Polite shuffle':n<45?'Puddle-hopper':n<80?'Lily-pad skipper':n<120?'Brook-clearer':'Absolute show-off';
