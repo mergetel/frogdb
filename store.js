@@ -244,3 +244,30 @@ export function pondRecords(records, frog) {
   }
   return badges;
 }
+// Field guide filters and sort as a shareable link, e.g. "#/?habitat=Wetland&sort=loud". Defaults stay out of the link,
+// and anything a link gets wrong (unknown habitat, made-up sort) is quietly ignored so a mangled URL still opens the guide.
+export const filterDefaults = {query: '', habitat: 'All habitats', rarity: 'Any rarity', size: 'Any size', color: 'Any color', active: 'Any time', weather: 'Any weather', met: 'all', sort: 'name'};
+export const sortKeys = ['name', 'zname', 'size', 'big', 'loud', 'quiet', 'far', 'near', 'rare', 'common'];
+const linkParams = {query: 'q', habitat: 'habitat', rarity: 'rarity', size: 'size', color: 'color', active: 'hours', weather: 'weather', met: 'met', sort: 'sort'};
+const linkChoices = {habitat: habitats, rarity: ['Common', 'Uncommon', 'Rare'], size: sizeClasses, color: colors, active: activeHours, weather: weathers, met: ['new', 'met'], sort: sortKeys};
+export function filterLink(state = {}) {
+  const params = new URLSearchParams();
+  for (const [key, param] of Object.entries(linkParams)) {
+    const value = key === 'query' ? String(state.query ?? '').trim() : state[key];
+    if (value && value !== filterDefaults[key]) params.set(param, value);
+  }
+  const text = params.toString();
+  return text ? `#/?${text}` : '#/';
+}
+export function readFilterLink(hash = '') {
+  const state = {...filterDefaults}, at = hash.indexOf('?');
+  if (at < 0) return state;
+  const params = new URLSearchParams(hash.slice(at + 1));
+  for (const [key, param] of Object.entries(linkParams)) {
+    const value = params.get(param);
+    if (value === null) continue;
+    if (key === 'query') state.query = value.trim().slice(0, 100);
+    else if (linkChoices[key].includes(value)) state[key] = value;
+  }
+  return state;
+}
