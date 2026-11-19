@@ -271,3 +271,11 @@ export function readFilterLink(hash = '') {
   }
   return state;
 }
+// "In a nutshell" blurb for a profile: one plain sentence covering size, rarity, habitat, hours, croak and leap,
+// so a visitor gets the gist before the full field notes (and has something tidy to paste to a friend).
+const nutshellCroak = n => n <= 2 ? 'barely above a whisper' : n <= 4 ? 'at garden-chat volume' : n <= 6 ? 'at porch-conversation volume' : n <= 8 ? 'at dinner-party volume' : 'loud enough to fill a room';
+const nutshellLeap = n => n < 20 ? 'polite shuffle' : n < 45 ? 'puddle-hopper' : n < 80 ? 'lily-pad skipper' : n < 120 ? 'brook-clearer' : 'absolute show-off';
+export function nutshell(frog) {
+  const leap = nutshellLeap(frog.leap);
+  return `A ${sizeClass(frog.size).toLowerCase()}, ${frog.rarity.toLowerCase()} ${frog.habitat.toLowerCase()} frog that comes out ${tipHours[frog.active]}, croaks ${nutshellCroak(frog.croak)} and leaps ${frog.leap} cm, ${/^[aeiou]/.test(leap) ? 'an' : 'a'} ${leap}.`;
+}

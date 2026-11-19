@@ -57,6 +57,8 @@
 .filters{flex-wrap:wrap}.filters .search{flex-basis:100%}.filters>label:not(.search){flex:1 1 200px}
 .spotting-tip{margin:0 0 24px;padding:14px 18px;border-radius:var(--radius);background:var(--lime);font-size:.94rem;line-height:1.5}.spotting-tip strong{display:block;font-size:.76rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px}
 @media print{.spotting-tip{border:1px solid #173e32;background:none}}
+.nutshell{margin:20px 0 0;padding:12px 0 12px 16px;border-left:4px solid var(--lime);display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px}.nutshell p{margin:0;flex:1 1 280px;font-size:1rem;line-height:1.5}.nutshell strong{display:block;font-size:.76rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px}.nutshell .text-button{margin:0}
+@media print{.nutshell{border-left-color:#173e32}.nutshell .text-button{display:none}}
 .recent{margin:-20px 0 50px}
 .recent-heading{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px}
 .recent h2{font-family:'Fraunces',serif;font-size:1.3rem;margin:0}
