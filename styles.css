@@ -87,3 +87,15 @@
 .filter-chips .text-button{margin:0 0 0 6px}
 @media print{.filter-chips{display:none!important}}
 .did-you-mean{font-size:.92rem}.did-you-mean a{font-weight:600;text-decoration:underline;text-underline-offset:3px}.did-you-mean a:hover{color:#567226}.empty .did-you-mean,.not-found .did-you-mean{margin-top:-10px}
+.passport{margin:-20px 0 50px;padding:18px 22px;border:1px dashed var(--ink);border-radius:var(--radius);background:#fffef9}
+.passport-heading{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.passport h2{font-family:'Fraunces',serif;font-size:1.3rem;margin:0}
+.passport-heading p{margin:0;font-size:.88rem;color:var(--muted)}
+.passport-bar{height:8px;border-radius:100px;background:#e4e8d8;overflow:hidden;margin-bottom:14px}
+.passport-bar span{display:block;height:100%;background:#5f8f3e;border-radius:100px;min-width:0}
+.passport ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.stamp{display:inline-block;font:inherit;font-size:.82rem;font-weight:600;padding:7px 12px;border-radius:100px;border:1px solid var(--line);background:#fff;color:var(--ink);font-variant-numeric:tabular-nums;cursor:pointer}
+button.stamp:hover{border-color:var(--ink);text-decoration:underline}
+button.stamp:focus-visible{outline:3px solid var(--ink,#173e32);outline-offset:3px}
+.stamp.done{background:var(--lime);border-color:var(--ink);cursor:default}
+@media print{.passport{display:none!important}}
