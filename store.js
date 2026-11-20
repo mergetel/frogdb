@@ -279,3 +279,20 @@ export function nutshell(frog) {
   const leap = nutshellLeap(frog.leap);
   return `A ${sizeClass(frog.size).toLowerCase()}, ${frog.rarity.toLowerCase()} ${frog.habitat.toLowerCase()} frog that comes out ${tipHours[frog.active]}, croaks ${nutshellCroak(frog.croak)} and leaps ${frog.leap} cm, ${/^[aeiou]/.test(leap) ? 'an' : 'a'} ${leap}.`;
 }
+// Frog passport: how many published frogs this browser has met, overall and per habitat,
+// so a visitor can see at a glance which corner of the field guide still needs exploring.
+export function passport(records, met) {
+  const pond = records.filter(r => r.status === 'published');
+  const total = pond.length;
+  if (!total) return null;
+  const count = list => list.filter(f => met.has(f.id)).length;
+  const seen = count(pond), left = total - seen;
+  const line = !seen ? 'No stamps yet. Open any frog’s profile to collect your first.'
+    : !left ? `All ${total} frogs met. You are, officially, a frog person.`
+    : `${seen} of ${total} frogs met. ${left} still lurking somewhere in the reeds.`;
+  const stamps = habitats.map(habitat => {
+    const local = pond.filter(f => f.habitat === habitat), n = count(local);
+    return {habitat, met: n, total: local.length, done: n === local.length, label: n === local.length ? `${habitat} · all ${local.length} ✓` : `${habitat} · ${n} of ${local.length}`};
+  }).filter(s => s.total);
+  return {met: seen, total, left, line, stamps};
+}
