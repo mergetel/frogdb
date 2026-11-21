@@ -1,4 +1,4 @@
-import {seedFrogs, habitats, portraits, activeHours, weathers, colors} from './data.js';
+import {seedFrogs, habitats, portraits, activeHours, weathers, colors, companies} from './data.js';
 export const STORAGE_KEY = 'frogdb.records.v1';
 export const MET_KEY = 'frogdb.met.v1';
 export const VIEW_KEY = 'frogdb.view.v1';
@@ -27,6 +27,8 @@ export function validateRecords(value) {
     if (!weathers.includes(r.weather)) throw new Error('Favorite weather must be Drizzle, Mist, Sunshine, Thunderstorm or Breeze.');
     r.color = record.color === undefined ? 'Green' : record.color;
     if (!colors.includes(r.color)) throw new Error(`Main color must be one of: ${colors.join(', ')}.`);
+    r.company = record.company === undefined ? 'Pairs' : record.company;
+    if (!companies.includes(r.company)) throw new Error(`Company kept must be one of: ${companies.join(', ')}.`);
     r.leap = record.leap === undefined ? 30 : Number(record.leap);
     if (!Number.isInteger(r.leap) || r.leap < 1 || r.leap > 300) throw new Error('Best leap must be a whole number of centimeters from 1 to 300.');
     r.size = Number(record.size); r.portrait = Number(record.portrait);
@@ -55,7 +57,10 @@ export function frogOfTheDay(records, date = new Date()) {
 // Size classes for the field guide filter; boundaries are in the same (invented) units as a frog's size.
 export const sizeClasses = ['Pocket-sized', 'Palm-sized', 'Hand-filling'];
 export function sizeClass(size) { return size < 3.5 ? sizeClasses[0] : size < 5.5 ? sizeClasses[1] : sizeClasses[2]; }
-export function resultSummary(count, {query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active = 'Any time', size = 'Any size', weather = 'Any weather', color = 'Any color'} = {}) {
+// "Company kept" phrasing for the result count, singular and plural, e.g. "2 frogs that roam in small gangs".
+const summaryCompany = {'Loner': 'that keeps to itself', 'Pairs': 'that comes in pairs', 'Small gang': 'that roams in a small gang', 'Big chorus': 'that sings in a big chorus'};
+const summaryCompanies = {'Loner': 'that keep to themselves', 'Pairs': 'that come in pairs', 'Small gang': 'that roam in small gangs', 'Big chorus': 'that sing in big choruses'};
+export function resultSummary(count, {query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active = 'Any time', size = 'Any size', weather = 'Any weather', color = 'Any color', company = 'Any company'} = {}) {
   const noun = count === 1 ? 'frog' : 'frogs';
   const kind = `${size === 'Any size' ? '' : `${size.toLowerCase()} `}${rarity === 'Any rarity' ? '' : `${rarity.toLowerCase()} `}${color === 'Any color' ? '' : `${color.toLowerCase()} `}`;
   const place = habitat === 'All habitats' ? '' : ` in the ${habitat.toLowerCase()}`;
@@ -63,10 +68,11 @@ export function resultSummary(count, {query = '', habitat = 'All habitats', rari
   const seen = met === 'new' ? ' you haven’t met yet' : met === 'met' ? ' you’ve already met' : '';
   const when = active === 'Any time' ? '' : ` out at ${active.toLowerCase()}`;
   const sky = weather === 'Any weather' ? '' : ` that love ${weather.toLowerCase()}`;
-  return `${count} ${kind}${noun}${place}${when}${sky}${term}${seen}`;
+  const crowd = company === 'Any company' ? '' : ` ${(count === 1 ? summaryCompany : summaryCompanies)[company]}`;
+  return `${count} ${kind}${noun}${place}${when}${sky}${crowd}${term}${seen}`;
 }
 // Names the filters in play and suggests which to drop, so an empty result says what to change.
-export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active: hours = 'Any time', size = 'Any size', weather = 'Any weather', color = 'Any color'} = {}) {
+export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active: hours = 'Any time', size = 'Any size', weather = 'Any weather', color = 'Any color', company = 'Any company'} = {}) {
   const active = [];
   if (query.trim()) active.push(`the search for “${query.trim()}”`);
   if (habitat !== 'All habitats') active.push(`the ${habitat.toLowerCase()} habitat`);
@@ -75,6 +81,7 @@ export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any r
   if (color !== 'Any color') active.push(`the color filter (${color.toLowerCase()})`);
   if (hours !== 'Any time') active.push(`the active hours filter (${hours.toLowerCase()})`);
   if (weather !== 'Any weather') active.push(`the favorite weather filter (${weather.toLowerCase()})`);
+  if (company !== 'Any company') active.push(`the company filter (${company.toLowerCase()})`);
   if (met !== 'all') active.push(met === 'new' ? 'the “not yet met” filter' : 'the “already met” filter');
   if (!active.length) return 'The pond is empty right now. Check back soon.';
   if (met === 'new' && active.length === 1) return 'You’ve met every frog in the pond. Pick “Any frog” to visit your favorites again.';
@@ -90,6 +97,7 @@ export function compareFrogs(a, b) {
     {label: 'Croak volume', a: `${a.croak} of 10`, b: `${b.croak} of 10`, note: edge(a.croak, b.croak, 'louder')},
     {label: 'Best leap', a: `${a.leap} cm`, b: `${b.leap} cm`, note: edge(a.leap, b.leap, 'the farther jumper')},
     {label: 'Main color', a: a.color, b: b.color, note: a.color === b.color ? 'Could be cousins' : ''},
+    {label: 'Company kept', a: a.company, b: b.company, note: a.company === b.company ? 'Birds of a feather (frogs, really)' : ''},
     {label: 'Active hours', a: a.active, b: b.active, note: a.active === b.active ? 'Keep the same hours' : ''},
     {label: 'Favorite weather', a: a.weather, b: b.weather, note: a.weather === b.weather ? 'Shared sky' : ''},
     {label: 'Personality', a: a.temperament, b: b.temperament, note: ''},
@@ -182,8 +190,9 @@ export function recentFrogs(records, recent, skip = '') {
   return recent.filter(id => id !== skip).map(id => records.find(r => r.id === id && r.status === 'published')).filter(Boolean);
 }
 // One removable chip per active field guide filter, in dropdown order; "key" names the filter a click should reset.
+const chipCompany = {'Loner': 'Keeps to itself', 'Pairs': 'Comes in pairs', 'Small gang': 'Small gangs', 'Big chorus': 'Big choruses'};
 const chipHours = {Dawn: 'Out at dawn', Daytime: 'Out by day', Dusk: 'Out at dusk', Night: 'Out at night'};
-export function filterChips({query = '', habitat = 'All habitats', rarity = 'Any rarity', size = 'Any size', color = 'Any color', active = 'Any time', weather = 'Any weather', met = 'all'} = {}) {
+export function filterChips({query = '', habitat = 'All habitats', rarity = 'Any rarity', size = 'Any size', color = 'Any color', active = 'Any time', weather = 'Any weather', company = 'Any company', met = 'all'} = {}) {
   const chips = [];
   if (query.trim()) chips.push({key: 'query', label: `Search: “${query.trim()}”`});
   if (habitat !== 'All habitats') chips.push({key: 'habitat', label: habitat});
@@ -192,6 +201,7 @@ export function filterChips({query = '', habitat = 'All habitats', rarity = 'Any
   if (color !== 'Any color') chips.push({key: 'color', label: color});
   if (active !== 'Any time') chips.push({key: 'active', label: chipHours[active] || active});
   if (weather !== 'Any weather') chips.push({key: 'weather', label: `Loves ${weather.toLowerCase()}`});
+  if (company !== 'Any company') chips.push({key: 'company', label: chipCompany[company] || company});
   if (met !== 'all') chips.push({key: 'met', label: met === 'new' ? 'Not yet met' : 'Already met'});
   return chips;
 }
@@ -246,10 +256,10 @@ export function pondRecords(records, frog) {
 }
 // Field guide filters and sort as a shareable link, e.g. "#/?habitat=Wetland&sort=loud". Defaults stay out of the link,
 // and anything a link gets wrong (unknown habitat, made-up sort) is quietly ignored so a mangled URL still opens the guide.
-export const filterDefaults = {query: '', habitat: 'All habitats', rarity: 'Any rarity', size: 'Any size', color: 'Any color', active: 'Any time', weather: 'Any weather', met: 'all', sort: 'name'};
+export const filterDefaults = {query: '', habitat: 'All habitats', rarity: 'Any rarity', size: 'Any size', color: 'Any color', active: 'Any time', weather: 'Any weather', company: 'Any company', met: 'all', sort: 'name'};
 export const sortKeys = ['name', 'zname', 'size', 'big', 'loud', 'quiet', 'far', 'near', 'rare', 'common'];
-const linkParams = {query: 'q', habitat: 'habitat', rarity: 'rarity', size: 'size', color: 'color', active: 'hours', weather: 'weather', met: 'met', sort: 'sort'};
-const linkChoices = {habitat: habitats, rarity: ['Common', 'Uncommon', 'Rare'], size: sizeClasses, color: colors, active: activeHours, weather: weathers, met: ['new', 'met'], sort: sortKeys};
+const linkParams = {query: 'q', habitat: 'habitat', rarity: 'rarity', size: 'size', color: 'color', active: 'hours', weather: 'weather', company: 'company', met: 'met', sort: 'sort'};
+const linkChoices = {habitat: habitats, rarity: ['Common', 'Uncommon', 'Rare'], size: sizeClasses, color: colors, active: activeHours, weather: weathers, company: companies, met: ['new', 'met'], sort: sortKeys};
 export function filterLink(state = {}) {
   const params = new URLSearchParams();
   for (const [key, param] of Object.entries(linkParams)) {

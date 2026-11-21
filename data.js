@@ -63,3 +63,8 @@ seedFrogs.forEach((f,i)=>f.color=color[i]);
 const leaps = [62, 48, 18, 12, 55, 40, 30, 35, 90, 45, 26, 110, 70, 58, 33, 9, 140, 52, 24, 47, 64, 50, 38, 28, 15, 22, 165, 44, 60, 41, 11, 36, 57, 32, 49]; // best single hop in cm, fictional
 seedFrogs.forEach((f,i)=>f.leap=leaps[i]);
 export const leapLabel = n => n<20?'Polite shuffle':n<45?'Puddle-hopper':n<80?'Lily-pad skipper':n<120?'Brook-clearer':'Absolute show-off';
+
+export const companies = ['Loner', 'Pairs', 'Small gang', 'Big chorus'];
+const company = ['Loner', 'Small gang', 'Loner', 'Pairs', 'Loner', 'Pairs', 'Loner', 'Small gang', 'Pairs', 'Loner', 'Small gang', 'Pairs', 'Loner', 'Big chorus', 'Small gang', 'Loner', 'Pairs', 'Small gang', 'Loner', 'Pairs', 'Loner', 'Big chorus', 'Pairs', 'Small gang', 'Loner', 'Pairs', 'Small gang', 'Loner', 'Big chorus', 'Pairs', 'Big chorus', 'Loner', 'Big chorus', 'Loner', 'Small gang']; // how many frogs you'd usually find together, fictional
+seedFrogs.forEach((f,i)=>f.company=company[i]);
+export const companyLabel = c => ({'Loner': 'Usually found alone', 'Pairs': 'Usually spotted two by two', 'Small gang': 'Three to six, rarely fewer', 'Big chorus': 'Wherever the crowd is'})[c] || '';
