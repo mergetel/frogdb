@@ -1,4 +1,4 @@
-import {seedFrogs, habitats, portraits, activeHours, weathers, colors, companies} from './data.js';
+import {seedFrogs, habitats, portraits, activeHours, weathers, colors, companies, croakLevels} from './data.js';
 export const STORAGE_KEY = 'frogdb.records.v1';
 export const MET_KEY = 'frogdb.met.v1';
 export const VIEW_KEY = 'frogdb.view.v1';
@@ -60,7 +60,9 @@ export function sizeClass(size) { return size < 3.5 ? sizeClasses[0] : size < 5.
 // "Company kept" phrasing for the result count, singular and plural, e.g. "2 frogs that roam in small gangs".
 const summaryCompany = {'Loner': 'that keeps to itself', 'Pairs': 'that comes in pairs', 'Small gang': 'that roams in a small gang', 'Big chorus': 'that sings in a big chorus'};
 const summaryCompanies = {'Loner': 'that keep to themselves', 'Pairs': 'that come in pairs', 'Small gang': 'that roam in small gangs', 'Big chorus': 'that sing in big choruses'};
-export function resultSummary(count, {query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active = 'Any time', size = 'Any size', weather = 'Any weather', color = 'Any color', company = 'Any company'} = {}) {
+// Croak volume levels as a compound adjective, for the result count ("3 frogs with a library-whisper croak") and chips.
+const volumeWords = {'Library whisper': 'library-whisper', 'Garden chat': 'garden-chat', 'Porch conversation': 'porch-conversation', 'Dinner-party voice': 'dinner-party', 'Room-filling': 'room-filling'};
+export function resultSummary(count, {query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active = 'Any time', size = 'Any size', weather = 'Any weather', color = 'Any color', company = 'Any company', volume = 'Any volume'} = {}) {
   const noun = count === 1 ? 'frog' : 'frogs';
   const kind = `${size === 'Any size' ? '' : `${size.toLowerCase()} `}${rarity === 'Any rarity' ? '' : `${rarity.toLowerCase()} `}${color === 'Any color' ? '' : `${color.toLowerCase()} `}`;
   const place = habitat === 'All habitats' ? '' : ` in the ${habitat.toLowerCase()}`;
@@ -69,10 +71,11 @@ export function resultSummary(count, {query = '', habitat = 'All habitats', rari
   const when = active === 'Any time' ? '' : ` out at ${active.toLowerCase()}`;
   const sky = weather === 'Any weather' ? '' : ` that love ${weather.toLowerCase()}`;
   const crowd = company === 'Any company' ? '' : ` ${(count === 1 ? summaryCompany : summaryCompanies)[company]}`;
-  return `${count} ${kind}${noun}${place}${when}${sky}${crowd}${term}${seen}`;
+  const voice = volume === 'Any volume' ? '' : ` with a ${volumeWords[volume]} croak`;
+  return `${count} ${kind}${noun}${place}${when}${sky}${crowd}${voice}${term}${seen}`;
 }
 // Names the filters in play and suggests which to drop, so an empty result says what to change.
-export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active: hours = 'Any time', size = 'Any size', weather = 'Any weather', color = 'Any color', company = 'Any company'} = {}) {
+export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any rarity', met = 'all', active: hours = 'Any time', size = 'Any size', weather = 'Any weather', color = 'Any color', company = 'Any company', volume = 'Any volume'} = {}) {
   const active = [];
   if (query.trim()) active.push(`the search for “${query.trim()}”`);
   if (habitat !== 'All habitats') active.push(`the ${habitat.toLowerCase()} habitat`);
@@ -82,6 +85,7 @@ export function emptyHint({query = '', habitat = 'All habitats', rarity = 'Any r
   if (hours !== 'Any time') active.push(`the active hours filter (${hours.toLowerCase()})`);
   if (weather !== 'Any weather') active.push(`the favorite weather filter (${weather.toLowerCase()})`);
   if (company !== 'Any company') active.push(`the company filter (${company.toLowerCase()})`);
+  if (volume !== 'Any volume') active.push(`the croak volume filter (${volume.toLowerCase()})`);
   if (met !== 'all') active.push(met === 'new' ? 'the “not yet met” filter' : 'the “already met” filter');
   if (!active.length) return 'The pond is empty right now. Check back soon.';
   if (met === 'new' && active.length === 1) return 'You’ve met every frog in the pond. Pick “Any frog” to visit your favorites again.';
@@ -192,7 +196,7 @@ export function recentFrogs(records, recent, skip = '') {
 // One removable chip per active field guide filter, in dropdown order; "key" names the filter a click should reset.
 const chipCompany = {'Loner': 'Keeps to itself', 'Pairs': 'Comes in pairs', 'Small gang': 'Small gangs', 'Big chorus': 'Big choruses'};
 const chipHours = {Dawn: 'Out at dawn', Daytime: 'Out by day', Dusk: 'Out at dusk', Night: 'Out at night'};
-export function filterChips({query = '', habitat = 'All habitats', rarity = 'Any rarity', size = 'Any size', color = 'Any color', active = 'Any time', weather = 'Any weather', company = 'Any company', met = 'all'} = {}) {
+export function filterChips({query = '', habitat = 'All habitats', rarity = 'Any rarity', size = 'Any size', color = 'Any color', active = 'Any time', weather = 'Any weather', company = 'Any company', volume = 'Any volume', met = 'all'} = {}) {
   const chips = [];
   if (query.trim()) chips.push({key: 'query', label: `Search: “${query.trim()}”`});
   if (habitat !== 'All habitats') chips.push({key: 'habitat', label: habitat});
@@ -202,6 +206,7 @@ export function filterChips({query = '', habitat = 'All habitats', rarity = 'Any
   if (active !== 'Any time') chips.push({key: 'active', label: chipHours[active] || active});
   if (weather !== 'Any weather') chips.push({key: 'weather', label: `Loves ${weather.toLowerCase()}`});
   if (company !== 'Any company') chips.push({key: 'company', label: chipCompany[company] || company});
+  if (volume !== 'Any volume') chips.push({key: 'volume', label: `${volumeWords[volume][0].toUpperCase()}${volumeWords[volume].slice(1)} croak`});
   if (met !== 'all') chips.push({key: 'met', label: met === 'new' ? 'Not yet met' : 'Already met'});
   return chips;
 }
@@ -256,10 +261,10 @@ export function pondRecords(records, frog) {
 }
 // Field guide filters and sort as a shareable link, e.g. "#/?habitat=Wetland&sort=loud". Defaults stay out of the link,
 // and anything a link gets wrong (unknown habitat, made-up sort) is quietly ignored so a mangled URL still opens the guide.
-export const filterDefaults = {query: '', habitat: 'All habitats', rarity: 'Any rarity', size: 'Any size', color: 'Any color', active: 'Any time', weather: 'Any weather', company: 'Any company', met: 'all', sort: 'name'};
+export const filterDefaults = {query: '', habitat: 'All habitats', rarity: 'Any rarity', size: 'Any size', color: 'Any color', active: 'Any time', weather: 'Any weather', company: 'Any company', volume: 'Any volume', met: 'all', sort: 'name'};
 export const sortKeys = ['name', 'zname', 'size', 'big', 'loud', 'quiet', 'far', 'near', 'rare', 'common'];
-const linkParams = {query: 'q', habitat: 'habitat', rarity: 'rarity', size: 'size', color: 'color', active: 'hours', weather: 'weather', company: 'company', met: 'met', sort: 'sort'};
-const linkChoices = {habitat: habitats, rarity: ['Common', 'Uncommon', 'Rare'], size: sizeClasses, color: colors, active: activeHours, weather: weathers, company: companies, met: ['new', 'met'], sort: sortKeys};
+const linkParams = {query: 'q', habitat: 'habitat', rarity: 'rarity', size: 'size', color: 'color', active: 'hours', weather: 'weather', company: 'company', volume: 'volume', met: 'met', sort: 'sort'};
+const linkChoices = {habitat: habitats, rarity: ['Common', 'Uncommon', 'Rare'], size: sizeClasses, color: colors, active: activeHours, weather: weathers, company: companies, volume: croakLevels, met: ['new', 'met'], sort: sortKeys};
 export function filterLink(state = {}) {
   const params = new URLSearchParams();
   for (const [key, param] of Object.entries(linkParams)) {
