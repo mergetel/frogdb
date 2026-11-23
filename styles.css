@@ -99,3 +99,5 @@ button.stamp:hover{border-color:var(--ink);text-decoration:underline}
 button.stamp:focus-visible{outline:3px solid var(--ink,#173e32);outline-offset:3px}
 .stamp.done{background:var(--lime);border-color:var(--ink);cursor:default}
 @media print{.passport{display:none!important}}
+.glossary{margin:-12px 0 30px;font-size:.9rem;line-height:1.5}.glossary summary{cursor:pointer;color:var(--muted);text-decoration:underline;width:fit-content;padding:4px 0}.glossary summary:hover{color:var(--ink)}.glossary summary:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:4px}.glossary[open] summary{color:var(--ink);font-weight:600}.glossary dl{margin:12px 0 0;padding:16px 18px;border-radius:var(--radius);border:1px solid var(--line);display:grid;gap:12px}.glossary dt{font-size:.76rem;letter-spacing:.04em;text-transform:uppercase;font-weight:600}.glossary dd{margin:2px 0 0}.glossary>p{margin:8px 0 0;font-size:.8rem;color:var(--muted)}
+@media print{.glossary{display:none}}

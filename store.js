@@ -1,4 +1,4 @@
-import {seedFrogs, habitats, portraits, activeHours, weathers, colors, companies, croakLevels} from './data.js';
+import {seedFrogs, habitats, portraits, activeHours, weathers, colors, companies, croakLevels, croakLabel, leapLabel, companyLabel} from './data.js';
 export const STORAGE_KEY = 'frogdb.records.v1';
 export const MET_KEY = 'frogdb.met.v1';
 export const VIEW_KEY = 'frogdb.view.v1';
@@ -310,4 +310,18 @@ export function passport(records, met) {
     return {habitat, met: n, total: local.length, done: n === local.length, label: n === local.length ? `${habitat} · all ${local.length} ✓` : `${habitat} · ${n} of ${local.length}`};
   }).filter(s => s.total);
   return {met: seen, total, left, line, stamps};
+}
+// "What do these mean?" glossary for a profile: what each scale measures, where its cut-offs fall,
+// and where this particular frog lands, so "croak 7 of 10" means something to a first-time visitor.
+const article = word => /^[aeiou]/i.test(word) ? 'an' : 'a';
+export function glossary(frog) {
+  const croak = croakLabel(frog.croak).toLowerCase(), leap = leapLabel(frog.leap).toLowerCase();
+  return [
+    ['Size', `Nose to rump, in centimeters. Under 3.5 cm is pocket-sized, under 5.5 cm is palm-sized, anything bigger is hand-filling. This one is ${sizeClass(frog.size).toLowerCase()}.`],
+    ['Rarity', `How often our imaginary field observers bump into one: Common, Uncommon or Rare. This one is ${frog.rarity.toLowerCase()}.`],
+    ['Active hours', `When it is most likely to be out and about. The rest of the time, assume it is napping somewhere damp. This one comes out ${tipHours[frog.active]}.`],
+    ['Company kept', `How many of its own kind it is usually seen with: ${companies.join(', ').replace(/, ([^,]*)$/, ' or $1').toLowerCase()}. This one: ${companyLabel(frog.company).toLowerCase()}.`],
+    ['Croak volume', `A 1 to 10 scale, two points per step: ${croakLevels.join(', ').toLowerCase()}. Its ${frog.croak} puts it at ${croak}.`],
+    ['Best leap', `Its longest single hop, in centimeters. Under 20 cm is a polite shuffle, 120 cm or more is an absolute show-off. Its ${frog.leap} cm makes it ${article(leap)} ${leap}.`]
+  ].map(([term, meaning]) => ({term, meaning}));
 }
