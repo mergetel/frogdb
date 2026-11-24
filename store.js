@@ -141,12 +141,14 @@ export function sortFrogs(list, key = 'name') {
   const rule = rules[key];
   return [...list].sort((a, b) => (rule ? rule(a, b) : 0) || byName(a, b));
 }
-// Remembers whether the field guide is a photo grid or a compact list; anything unexpected means the grid.
+// Remembers whether the field guide is a photo grid, a compact list or grouped by habitat; anything unexpected means the grid.
+export const views = ['grid', 'list', 'habitat'];
+const knownView = view => views.includes(view) ? view : 'grid';
 export function loadView(storage) {
-  try { return storage.getItem(VIEW_KEY) === 'list' ? 'list' : 'grid'; } catch { return 'grid'; }
+  try { return knownView(storage.getItem(VIEW_KEY)); } catch { return 'grid'; }
 }
 export function saveView(storage, view) {
-  const next = view === 'list' ? 'list' : 'grid';
+  const next = knownView(view);
   try { storage.setItem(VIEW_KEY, next); } catch { /* storage is optional here; the session still remembers */ }
   return next;
 }
@@ -324,4 +326,17 @@ export function glossary(frog) {
     ['Croak volume', `A 1 to 10 scale, two points per step: ${croakLevels.join(', ').toLowerCase()}. Its ${frog.croak} puts it at ${croak}.`],
     ['Best leap', `Its longest single hop, in centimeters. Under 20 cm is a polite shuffle, 120 cm or more is an absolute show-off. Its ${frog.leap} cm makes it ${article(leap)} ${leap}.`]
   ].map(([term, meaning]) => ({term, meaning}));
+}
+// "By habitat" layout: the already filtered and sorted frogs, split into one shelf per habitat, empty habitats skipped.
+const habitatIntros = {
+  'Cloud forest': 'Up where the leaves stay damp and nobody is in a hurry.',
+  'Riverbank': 'Stone-sitters and ripple-watchers, never far from moving water.',
+  'Wetland': 'The marsh crowd. Mud, reeds and very strong opinions about puddles.',
+  'Woodland': 'Leaf-litter lurkers who blend right in until they blink.'
+};
+export function habitatGroups(list) {
+  return habitats.map(habitat => {
+    const frogs = list.filter(f => f.habitat === habitat);
+    return {habitat, frogs, count: `${frogs.length} ${frogs.length === 1 ? 'frog' : 'frogs'}`, intro: habitatIntros[habitat]};
+  }).filter(g => g.frogs.length);
 }
