@@ -69,3 +69,8 @@ export const companies = ['Loner', 'Pairs', 'Small gang', 'Big chorus'];
 const company = ['Loner', 'Small gang', 'Loner', 'Pairs', 'Loner', 'Pairs', 'Loner', 'Small gang', 'Pairs', 'Loner', 'Small gang', 'Pairs', 'Loner', 'Big chorus', 'Small gang', 'Loner', 'Pairs', 'Small gang', 'Loner', 'Pairs', 'Loner', 'Big chorus', 'Pairs', 'Small gang', 'Loner', 'Pairs', 'Small gang', 'Loner', 'Big chorus', 'Pairs', 'Big chorus', 'Loner', 'Big chorus', 'Loner', 'Small gang']; // how many frogs you'd usually find together, fictional
 seedFrogs.forEach((f,i)=>f.company=company[i]);
 export const companyLabel = c => ({'Loner': 'Usually found alone', 'Pairs': 'Usually spotted two by two', 'Small gang': 'Three to six, rarely fewer', 'Big chorus': 'Wherever the crowd is'})[c] || '';
+
+export const seasons = ['Spring', 'Summer', 'Autumn', 'Winter'];
+const season = ['Autumn', 'Summer', 'Spring', 'Spring', 'Summer', 'Autumn', 'Spring', 'Winter', 'Summer', 'Autumn', 'Spring', 'Summer', 'Winter', 'Summer', 'Autumn', 'Summer', 'Spring', 'Autumn', 'Spring', 'Summer', 'Winter', 'Autumn', 'Spring', 'Summer', 'Winter', 'Autumn', 'Summer', 'Winter', 'Spring', 'Autumn', 'Summer', 'Autumn', 'Spring', 'Winter', 'Winter']; // the time of year each frog is easiest to find, fictional
+seedFrogs.forEach((f,i)=>f.season=season[i]);
+export const seasonLabel = s => ({'Spring': 'Out with the first warm rain', 'Summer': 'Holds court on sun-warmed stones', 'Autumn': 'Busiest when the leaves come down', 'Winter': 'Braves the frosty mornings'})[s] || '';
