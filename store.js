@@ -128,6 +128,10 @@ export function markMet(storage, met, id) {
   try { storage.setItem(MET_KEY, JSON.stringify([...next])); } catch { /* storage is optional here; the session still remembers */ }
   return next;
 }
+// "Leap for its size": how many of its own body lengths a frog clears in its best hop, to one decimal place.
+export function bodyLengths(frog) {
+  return Math.round(frog.leap / frog.size * 10) / 10;
+}
 // Orders frogs for the field guide; ties always fall back to A to Z so the order never shuffles.
 const rarityRank = f => ['Common', 'Uncommon', 'Rare'].indexOf(f.rarity);
 export function sortFrogs(list, key = 'name') {
@@ -139,6 +143,7 @@ export function sortFrogs(list, key = 'name') {
     quiet: (a, b) => a.croak - b.croak,
     far: (a, b) => b.leap - a.leap,
     near: (a, b) => a.leap - b.leap,
+    lengths: (a, b) => b.leap / b.size - a.leap / a.size,
     zname: (a, b) => byName(b, a),
     rare: (a, b) => rarityRank(b) - rarityRank(a),
     common: (a, b) => rarityRank(a) - rarityRank(b)
@@ -270,7 +275,7 @@ export function pondRecords(records, frog) {
 // Field guide filters and sort as a shareable link, e.g. "#/?habitat=Wetland&sort=loud". Defaults stay out of the link,
 // and anything a link gets wrong (unknown habitat, made-up sort) is quietly ignored so a mangled URL still opens the guide.
 export const filterDefaults = {query: '', habitat: 'All habitats', rarity: 'Any rarity', size: 'Any size', color: 'Any color', active: 'Any time', weather: 'Any weather', season: 'Any season', company: 'Any company', volume: 'Any volume', met: 'all', sort: 'name'};
-export const sortKeys = ['name', 'zname', 'size', 'big', 'loud', 'quiet', 'far', 'near', 'rare', 'common'];
+export const sortKeys = ['name', 'zname', 'size', 'big', 'loud', 'quiet', 'far', 'near', 'lengths', 'rare', 'common'];
 const linkParams = {query: 'q', habitat: 'habitat', rarity: 'rarity', size: 'size', color: 'color', active: 'hours', weather: 'weather', season: 'season', company: 'company', volume: 'volume', met: 'met', sort: 'sort'};
 const linkChoices = {habitat: habitats, rarity: ['Common', 'Uncommon', 'Rare'], size: sizeClasses, color: colors, active: activeHours, weather: weathers, season: seasons, company: companies, volume: croakLevels, met: ['new', 'met'], sort: sortKeys};
 export function filterLink(state = {}) {
