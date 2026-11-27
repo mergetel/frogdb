@@ -351,3 +351,16 @@ export function habitatGroups(list) {
     return {habitat, frogs, count: `${frogs.length} ${frogs.length === 1 ? 'frog' : 'frogs'}`, intro: habitatIntros[habitat]};
   }).filter(g => g.frogs.length);
 }
+// "Who's up right now?": the visitor's local clock picks an active-hours slot, and the line counts the published frogs keeping it.
+export function hourSlot(date = new Date()) {
+  const h = date.getHours();
+  return h >= 5 && h < 8 ? 'Dawn' : h >= 8 && h < 17 ? 'Daytime' : h >= 17 && h < 20 ? 'Dusk' : 'Night';
+}
+const slotGreetings = {Dawn: 'Early start? It’s dawn', Daytime: 'Good day. It’s daytime', Dusk: 'Good evening. It’s dusk', Night: 'Up late? It’s night-time'};
+export function outNow(records, date = new Date()) {
+  const slot = hourSlot(date);
+  const count = records.filter(r => r.status === 'published' && r.active === slot).length;
+  const who = count === 1 ? 'one frog is' : `${count} frogs are`;
+  const line = count ? `${slotGreetings[slot]} where you are, so ${who} probably up and about.` : `${slotGreetings[slot]} where you are, and every frog here is fast asleep. Try again in a few hours.`;
+  return {slot, count, line};
+}

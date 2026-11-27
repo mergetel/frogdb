@@ -105,3 +105,7 @@ button.stamp:focus-visible{outline:3px solid var(--ink,#173e32);outline-offset:3
 @media print{.passport{display:none!important}}
 .glossary{margin:-12px 0 30px;font-size:.9rem;line-height:1.5}.glossary summary{cursor:pointer;color:var(--muted);text-decoration:underline;width:fit-content;padding:4px 0}.glossary summary:hover{color:var(--ink)}.glossary summary:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:4px}.glossary[open] summary{color:var(--ink);font-weight:600}.glossary dl{margin:12px 0 0;padding:16px 18px;border-radius:var(--radius);border:1px solid var(--line);display:grid;gap:12px}.glossary dt{font-size:.76rem;letter-spacing:.04em;text-transform:uppercase;font-weight:600}.glossary dd{margin:2px 0 0}.glossary>p{margin:8px 0 0;font-size:.8rem;color:var(--muted)}
 @media print{.glossary{display:none}}
+.up-now{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:-12px 0 18px;font-size:.92rem;color:var(--muted)}
+.up-now span::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:#5f8f3e;margin-right:8px;vertical-align:1px}
+.up-now .text-button{margin:0;color:var(--ink);font-weight:600}
+@media print{.up-now{display:none!important}}
