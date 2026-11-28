@@ -4,40 +4,56 @@ export const MET_KEY = 'frogdb.met.v1';
 export const VIEW_KEY = 'frogdb.view.v1';
 export const RECENT_KEY = 'frogdb.recent.v1';
 export const freshRecords = () => structuredClone(seedFrogs);
+// Field names as the editor labels them, so an error points at the box (or JSON key) that needs fixing.
+export const fieldNames = {id: 'ID', name: 'Common name', scientific: 'Scientific name', habitat: 'Habitat', temperament: 'Personality', call: 'Call', diet: 'Favorite food', rarity: 'Rarity', status: 'Status', description: 'Field notes'};
+// Which frog an import error is about: its place in the file, plus its name when it has one.
+export function frogLabel(record, index) {
+  const name = typeof record?.name === 'string' ? record.name.trim() : '';
+  return `Frog ${index + 1}${name ? ` (“${name.length > 40 ? `${name.slice(0, 40)}…` : name}”)` : ''}`;
+}
 export function validateRecords(value) {
-  if (!Array.isArray(value) || value.length > 500) throw new Error('Choose a FrogDB JSON file containing no more than 500 records.');
-  const ids = new Set();
-  return value.map(record => {
-    const r = {};
-    for (const key of ['id','name','scientific','habitat','temperament','call','diet','rarity','status','description']) {
-      if (typeof record?.[key] !== 'string') throw new Error(`A frog is missing its ${key}.`);
-      r[key] = record[key].trim();
-      if (!r[key] || r[key].length > (key === 'description' ? 1200 : 100)) throw new Error(`Check the frog's ${key} length.`);
-    }
-    if (!/^[a-zA-Z0-9-]+$/.test(r.id) || ids.has(r.id)) throw new Error('Each frog needs a unique, valid ID.');
-    ids.add(r.id);
-    if (!habitats.includes(r.habitat) || !['published','draft'].includes(r.status) || !['Common','Uncommon','Rare'].includes(r.rarity)) throw new Error('A frog has an invalid habitat, status or rarity.');
-    r.croak = record.croak === undefined ? 5 : Number(record.croak);
-    if (!Number.isInteger(r.croak) || r.croak < 1 || r.croak > 10) throw new Error('Croak volume must be a whole number from 1 to 10.');
-    r.move = typeof record.move === 'string' ? record.move.trim() : '';
-    if (r.move.length > 100) throw new Error('Signature move must be 100 characters or fewer.');
-    r.active = record.active === undefined ? 'Dusk' : record.active;
-    if (!activeHours.includes(r.active)) throw new Error('Active hours must be Dawn, Daytime, Dusk or Night.');
-    r.weather = record.weather === undefined ? 'Mist' : record.weather;
-    if (!weathers.includes(r.weather)) throw new Error('Favorite weather must be Drizzle, Mist, Sunshine, Thunderstorm or Breeze.');
-    r.color = record.color === undefined ? 'Green' : record.color;
-    if (!colors.includes(r.color)) throw new Error(`Main color must be one of: ${colors.join(', ')}.`);
-    r.company = record.company === undefined ? 'Pairs' : record.company;
-    if (!companies.includes(r.company)) throw new Error(`Company kept must be one of: ${companies.join(', ')}.`);
-    r.season = record.season === undefined ? 'Spring' : record.season;
-    if (!seasons.includes(r.season)) throw new Error(`Best season must be one of: ${seasons.join(', ')}.`);
-    r.leap = record.leap === undefined ? 30 : Number(record.leap);
-    if (!Number.isInteger(r.leap) || r.leap < 1 || r.leap > 300) throw new Error('Best leap must be a whole number of centimeters from 1 to 300.');
-    r.size = Number(record.size); r.portrait = Number(record.portrait);
-    if (!Number.isFinite(r.size) || r.size < 0.1 || r.size > 40) throw new Error('Size must be between 0.1 and 40 cm.');
-    if (!Number.isInteger(r.portrait) || r.portrait < 0 || r.portrait >= portraits.length) throw new Error('Choose one of the frog portraits.');
-    return r;
-  });
+  if (!Array.isArray(value)) throw new Error('That file isn’t a FrogDB collection. Choose a JSON file exported from Manage frogs.');
+  if (value.length > 500) throw new Error(`That file holds ${value.length} frogs, and the pond fits 500 at most.`);
+  const ids = new Map();
+  // One record (the editor) gets the plain message; a whole file says which frog to go and fix.
+  return value.map((record, i) => { try { return validateRecord(record, i, ids); } catch (error) { throw value.length > 1 ? new Error(`${frogLabel(record, i)}: ${error.message}`) : error; } });
+}
+function validateRecord(record, i, ids) {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) throw new Error('This entry isn’t a frog record at all.');
+  const r = {};
+  for (const key of ['id','name','scientific','habitat','temperament','call','diet','rarity','status','description']) {
+    const label = fieldNames[key], are = key === 'description' ? 'are' : 'is', limit = key === 'description' ? 1200 : 100;
+    if (typeof record[key] !== 'string') throw new Error(`${label} ${are} missing.`);
+    r[key] = record[key].trim();
+    if (!r[key]) throw new Error(`${label} ${are} blank. Even a word or two will do.`);
+    if (r[key].length > limit) throw new Error(`${label} ${are} ${r[key].length.toLocaleString('en-US')} characters long. Please keep ${are === 'are' ? 'them' : 'it'} to ${limit.toLocaleString('en-US')} or fewer.`);
+  }
+  if (!/^[a-zA-Z0-9-]+$/.test(r.id)) throw new Error(`ID “${r.id}” can only use letters, numbers and hyphens.`);
+  if (ids.has(r.id)) throw new Error(`ID “${r.id}” is already taken by frog ${ids.get(r.id) + 1}. Every frog needs its own.`);
+  ids.set(r.id, i);
+  if (!habitats.includes(r.habitat)) throw new Error(`Habitat must be one of: ${habitats.join(', ')}.`);
+  if (!['Common','Uncommon','Rare'].includes(r.rarity)) throw new Error('Rarity must be Common, Uncommon or Rare.');
+  if (!['published','draft'].includes(r.status)) throw new Error('Status must be published or draft.');
+  r.croak = record.croak === undefined ? 5 : Number(record.croak);
+  if (!Number.isInteger(r.croak) || r.croak < 1 || r.croak > 10) throw new Error('Croak volume must be a whole number from 1 to 10.');
+  r.move = typeof record.move === 'string' ? record.move.trim() : '';
+  if (r.move.length > 100) throw new Error('Signature move must be 100 characters or fewer.');
+  r.active = record.active === undefined ? 'Dusk' : record.active;
+  if (!activeHours.includes(r.active)) throw new Error('Active hours must be Dawn, Daytime, Dusk or Night.');
+  r.weather = record.weather === undefined ? 'Mist' : record.weather;
+  if (!weathers.includes(r.weather)) throw new Error('Favorite weather must be Drizzle, Mist, Sunshine, Thunderstorm or Breeze.');
+  r.color = record.color === undefined ? 'Green' : record.color;
+  if (!colors.includes(r.color)) throw new Error(`Main color must be one of: ${colors.join(', ')}.`);
+  r.company = record.company === undefined ? 'Pairs' : record.company;
+  if (!companies.includes(r.company)) throw new Error(`Company kept must be one of: ${companies.join(', ')}.`);
+  r.season = record.season === undefined ? 'Spring' : record.season;
+  if (!seasons.includes(r.season)) throw new Error(`Best season must be one of: ${seasons.join(', ')}.`);
+  r.leap = record.leap === undefined ? 30 : Number(record.leap);
+  if (!Number.isInteger(r.leap) || r.leap < 1 || r.leap > 300) throw new Error('Best leap must be a whole number of centimeters from 1 to 300.');
+  r.size = Number(record.size); r.portrait = Number(record.portrait);
+  if (!Number.isFinite(r.size) || r.size < 0.1 || r.size > 40) throw new Error('Size must be between 0.1 and 40 cm.');
+  if (!Number.isInteger(r.portrait) || r.portrait < 0 || r.portrait >= portraits.length) throw new Error('Choose one of the frog portraits.');
+  return r;
 }
 export function loadRecords(storage) {
   const raw = storage.getItem(STORAGE_KEY);
